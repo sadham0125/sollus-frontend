@@ -1,0 +1,489 @@
+.header.glass-nav {
+  padding-top: 2.4rem;
+  padding-bottom: 0;
+  background: transparent !important;
+  color: #fff;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+.header.glass-nav:before,
+.header.glass-nav:after,
+.header.glass-nav.on-scroll:before,
+.header.glass-nav.on-scroll:after {
+  content: none !important;
+  display: none !important;
+  opacity: 0 !important;
+  background: none !important;
+}
+
+.header.glass-nav.on-scroll {
+  background: transparent !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+.header.glass-nav.on-hide {
+  transform: none;
+}
+
+@media screen and (max-width: 991px) {
+  .header.glass-nav {
+    transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .header.glass-nav.on-hide:not(.on-open-nav) {
+    transform: translate3d(0, calc(-100% - 1.2rem), 0) !important;
+    pointer-events: none;
+  }
+
+  .header.glass-nav.on-hide:not(.on-open-nav) .glass-nav-bar {
+    pointer-events: none !important;
+  }
+}
+
+.header.glass-nav.on-light,
+.header.glass-nav.on-dark,
+.header.glass-nav.on-mix,
+.header.glass-nav.on-light.on-scroll,
+.header.glass-nav.on-dark.on-scroll {
+  color: #fff;
+}
+
+.header.glass-nav .header-inner {
+  display: flex;
+  justify-content: center;
+  padding: 0 2.4rem;
+}
+
+.header.glass-nav .glass-nav-bar,
+.header.glass-nav .glass-nav-bar.container,
+.header.glass-nav .glass-nav-bar.container.grid,
+.header.glass-nav .glass-nav-bar.w-container {
+  pointer-events: auto;
+  display: flex !important;
+  flex: 0 1 auto !important;
+  grid-template-columns: none !important;
+  grid-template-rows: none !important;
+  position: relative;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 4.8rem;
+  width: max-content !important;
+  min-height: 7.2rem;
+  max-width: calc(100vw - 4.8rem) !important;
+  margin: 0 auto;
+  padding: 0.55rem 0.55rem 0.55rem 2.8rem !important;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  background: transparent !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 12px 36px rgba(4, 16, 32, 0.22);
+  overflow: visible;
+}
+
+.header.glass-nav .glass-nav-frost {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.14) 0%,
+    rgba(255, 255, 255, 0.04) 22%,
+    transparent 100%
+  );
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  backdrop-filter: blur(18px) saturate(150%);
+}
+
+.header.glass-nav .glass-nav-frost:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(5, 18, 34, 0.52);
+}
+
+.header.glass-nav .glass-nav-bar > *:not(.glass-nav-frost) {
+  position: relative;
+  z-index: 1;
+}
+
+.header.glass-nav .glass-nav-bar:before,
+.header.glass-nav .glass-nav-bar:after {
+  content: none !important;
+  display: none !important;
+}
+
+.header.glass-nav .glass-nav-bar > * {
+  grid-area: auto !important;
+  grid-column: auto !important;
+  grid-row: auto !important;
+  place-self: auto !important;
+  justify-self: auto !important;
+}
+
+.header.glass-nav .header-logo {
+  flex: none;
+  align-self: center;
+  color: #fff;
+}
+
+.header.glass-nav .header-logo-ic {
+  display: block;
+  width: 4.6rem;
+  height: 5.2rem;
+  line-height: 0;
+}
+
+.header.glass-nav .header-logo-ic .header-logo-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+@media screen and (min-width: 992px) {
+  .header.glass-nav .header-menu {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: static !important;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 0 !important;
+    background: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: auto;
+  }
+
+  .header.glass-nav .header-menu-list {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2.8rem;
+    margin: 0;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .header.glass-nav .glass-nav-extra,
+  .header.glass-nav .mobile-nav {
+    display: none !important;
+  }
+
+  .header.glass-nav .header-btn.only-desk,
+  .header.glass-nav .glass-nav-cta {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    align-self: stretch !important;
+    flex: none;
+    min-width: 21rem;
+    padding: 0 2.8rem;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #e8c56a 0%, #c9a045 48%, #a67b28 100%);
+    box-shadow: 0 4px 14px rgba(166, 124, 42, 0.32);
+    color: #fff;
+    text-decoration: none;
+  }
+
+  .header.glass-nav .header-btn.only-desk:hover,
+  .header.glass-nav .glass-nav-cta:hover {
+    background: linear-gradient(180deg, #f0d27c 0%, #d4ad52 48%, #b58932 100%);
+  }
+
+  .header.glass-nav .header-btn.only-desk .header-btn-dark,
+  .header.glass-nav .header-btn.only-desk .header-btn-light,
+  .header.glass-nav .header-btn.only-desk .btn {
+    display: none !important;
+  }
+}
+
+#ecosystem {
+  scroll-margin-top: 0;
+}
+
+#elara,
+#experience,
+#health {
+  scroll-margin-top: 12rem;
+}
+
+@media screen and (max-width: 991px) {
+  #elara,
+  #experience,
+  #health {
+    scroll-margin-top: 0;
+  }
+}
+
+.header.glass-nav .header-menu-link {
+  opacity: 1;
+  color: #fff;
+}
+
+.header.glass-nav .header-menu-link .txt,
+.header.glass-nav .glass-nav-link {
+  font-family: "Montserrat", sans-serif;
+  font-size: 1.8rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  text-transform: none !important;
+  color: #fff !important;
+  white-space: nowrap;
+  transition: color 0.25s ease, opacity 0.25s ease;
+}
+
+.header.glass-nav .text-flip,
+.header.glass-nav .text-flip-inner {
+  overflow: visible;
+}
+
+.header.glass-nav .text-flip-inner {
+  display: block;
+  transform: none !important;
+}
+
+.header.glass-nav .text-flip .txt,
+.header.glass-nav .text-flip:hover .txt,
+.header.glass-nav .header-menu-link:hover .txt {
+  transform: none !important;
+}
+
+.header.glass-nav .text-flip-txt.bot,
+.header.glass-nav .text-flip-txt:last-child {
+  display: none !important;
+}
+
+.header.glass-nav .header-menu-link:hover {
+  opacity: 1;
+}
+
+.header.glass-nav .header-menu-link:hover .txt,
+.header.glass-nav .header-menu-link:hover .glass-nav-link {
+  color: #e8c56a !important;
+}
+
+.header.glass-nav .glass-nav-cta-label {
+  font-family: "Montserrat", sans-serif;
+  font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  color: #fff;
+  white-space: nowrap;
+}
+
+@media screen and (max-width: 991px) {
+  .header.glass-nav {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .header.glass-nav .header-inner {
+    padding: 1.4rem 1.6rem 0;
+  }
+
+  .header.glass-nav .glass-nav-bar,
+  .header.glass-nav .glass-nav-bar.container,
+  .header.glass-nav .glass-nav-bar.container.grid,
+  .header.glass-nav .glass-nav-bar.w-container {
+    width: 100% !important;
+    min-width: 0;
+    max-width: none !important;
+    gap: 1.2rem;
+    padding: 0.45rem 0.55rem 0.45rem 2rem !important;
+    border: 0;
+    border-radius: 0;
+    background: transparent !important;
+    box-shadow: none;
+  }
+
+  .header.glass-nav .glass-nav-frost {
+    display: none;
+  }
+
+  .header.glass-nav .header-logo-ic {
+    width: 4.2rem;
+    height: 4.8rem;
+  }
+
+  .header.glass-nav .glass-nav-extra {
+    display: flex;
+  }
+
+  .header.glass-nav .header-menu {
+    display: none !important;
+  }
+
+  .header.glass-nav .header-logo,
+  .header.glass-nav .header-ham {
+    z-index: 3;
+  }
+
+  .header.glass-nav.on-open-nav {
+    color: #111 !important;
+    pointer-events: auto;
+  }
+
+  .header.glass-nav .mobile-nav {
+    display: flex !important;
+    z-index: 1;
+    position: fixed;
+    inset: 0;
+    flex-direction: column;
+    width: 100vw;
+    height: 100dvh;
+    min-height: 100svh;
+    margin: 0;
+    padding: 11.2rem 2.4rem max(3.2rem, env(safe-area-inset-bottom));
+    overflow: auto;
+    background:
+      radial-gradient(120% 80% at 100% 0%, rgba(232, 197, 106, 0.18), transparent 46%),
+      #f5f2ec;
+    color: #111;
+    pointer-events: none;
+    visibility: hidden;
+    clip-path: inset(0 0 0 100%);
+    transition:
+      clip-path 0.65s cubic-bezier(0.76, 0, 0.24, 1),
+      visibility 0.65s;
+    counter-reset: nav;
+  }
+
+  .header.glass-nav.on-open-nav .mobile-nav {
+    pointer-events: auto;
+    visibility: visible;
+    clip-path: inset(0);
+  }
+
+  .header.glass-nav .mobile-nav-kicker {
+    margin: 0 0 1.6rem;
+    color: #a67b28;
+    font-family: "Montserrat", sans-serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+
+  .header.glass-nav .mobile-nav-list {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .header.glass-nav .mobile-nav-item {
+    border-bottom: 1px solid rgba(17, 17, 17, 0.12);
+    counter-increment: nav;
+  }
+
+  .header.glass-nav .mobile-nav-link {
+    display: flex;
+    align-items: baseline;
+    gap: 1.8rem;
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    padding: 1.8rem 0;
+    color: #111;
+    text-decoration: none;
+    pointer-events: auto;
+  }
+
+  .header.glass-nav .mobile-nav-link::before {
+    content: counter(nav, decimal-leading-zero);
+    flex: none;
+    color: #a67b28;
+    font-family: "Montserrat", sans-serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+  }
+
+  .header.glass-nav .mobile-nav-link {
+    font-family: "Playfair Display", "Marcellus", serif;
+    font-size: clamp(3.4rem, 10vw, 5.2rem);
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+  }
+
+  .header.glass-nav .mobile-nav-link:hover {
+    color: #003357;
+  }
+
+  .header.glass-nav .mobile-nav-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 5.6rem;
+    margin-top: 3.2rem;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #e8c56a 0%, #c9a045 48%, #a67b28 100%);
+    box-shadow: 0 8px 24px rgba(166, 124, 42, 0.28);
+    color: #fff;
+    font-family: "Montserrat", sans-serif;
+    font-size: 1.6rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .header.glass-nav .mobile-nav-tagline {
+    margin: 1.8rem 0 0;
+    color: #6b6b6b;
+    font-family: "Playfair Display", "Marcellus", serif;
+    font-size: 1.6rem;
+    font-style: italic;
+    text-align: center;
+  }
+
+  .header.glass-nav .header-btn.only-desk {
+    display: none !important;
+  }
+
+  .header.glass-nav .header-ham {
+    display: flex;
+    flex: none;
+    align-self: center;
+    z-index: 3;
+    width: 4.8rem;
+    height: 4.8rem;
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.35);
+    border-radius: 999px;
+    background: transparent;
+  }
+
+  .header.glass-nav.on-open-nav .header-ham {
+    color: #111 !important;
+    border-color: rgba(17, 17, 17, 0.22) !important;
+    background: rgba(255, 255, 255, 0.55);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header.glass-nav .mobile-nav {
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    clip-path: none;
+    opacity: 0;
+  }
+
+  .header.glass-nav.on-open-nav .mobile-nav {
+    opacity: 1;
+  }
+}

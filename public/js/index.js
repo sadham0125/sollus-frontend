@@ -1220,7 +1220,7 @@ const script = () => {
       this._onSectionClick = onSectionClick;
       document.addEventListener("click", this._onSectionClick, true);
       $(document).off("click.sectionNav");
-    }
+        }
         update(data) {
             this.updateMode(data);
         }
@@ -2382,6 +2382,8 @@ const script = () => {
                 this.tlOverlap = null;
                 this.tlScaleImage = null;
                 this.stYachtFrames = null;
+                this.tlYachtFrames = null;
+                this.yachtPlayer = null;
                 this.onYachtResize = null;
                 this.yachtReady = false;
             }
@@ -2390,30 +2392,24 @@ const script = () => {
         if (!this.el) return;
         requestAnimationFrame(() => this.animationScrub());
             }
-            loadYachtFrames(canvas) {
-        if (!canvas) return Promise.resolve([]);
-        const count = Math.max(
+            yachtFrameCount(canvas) {
+        return Math.max(
           1,
-          parseInt(canvas.getAttribute("data-frame-count"), 10) || 5,
+          parseInt(canvas.getAttribute("data-frame-count"), 10) || 155,
         );
+            }
+            yachtFrameUrl(canvas, i) {
         const pattern =
           canvas.getAttribute("data-frame-src") ||
-          "/images/Yacht_frames/frame_{n}.jpg";
-        const urls = Array.from({ length: count }, (_, i) =>
-          pattern.replace("{n}", String(i + 1).padStart(3, "0")),
-        );
-        return Promise.all(
-          urls.map(
-            (src) =>
-              new Promise((resolve) => {
-                const im = new Image();
-                im.decoding = "async";
-                im.onload = () => resolve(im);
-                im.onerror = () => resolve(null);
-                im.src = src;
-              }),
-          ),
-        ).then((list) => list.filter(Boolean));
+          "/images/Yacht_frames/ezgif-frame-{n}.jpg";
+        return pattern.replace("{n}", String(i + 1).padStart(3, "0"));
+            }
+            yachtDecodeSize(canvas) {
+        const dpr = Math.min(window.devicePixelRatio || 1, 1.75);
+        const cw = Math.max(1, canvas.clientWidth || viewport.w || 1280);
+        const rw = Math.round(Math.min(1440, cw * dpr));
+        const rh = Math.round((rw * 9) / 16);
+        return { rw, rh };
             }
             sizeYachtCanvas(canvas) {
         if (!canvas) return null;
@@ -2426,16 +2422,21 @@ const script = () => {
           canvas.width = nextW;
           canvas.height = nextH;
         }
-        const ctx = canvas.getContext("2d");
+        const ctx = canvas.getContext("2d", { alpha: false });
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.imageSmoothingEnabled = true;
+        if ("imageSmoothingQuality" in ctx) ctx.imageSmoothingQuality = "high";
         return { ctx, w, h };
             }
             drawYachtFrame(canvas, img) {
-        if (!canvas || !img || !img.width) return;
+        if (!canvas || !img) return;
+        const iw = img.width || img.naturalWidth;
+        const ih = img.height || img.naturalHeight;
+        if (!iw || !ih) return;
         const sized = this.sizeYachtCanvas(canvas);
         if (!sized) return;
         const { ctx, w, h } = sized;
-        const ir = img.width / img.height;
+        const ir = iw / ih;
         const cr = w / h;
         let dw;
         let dh;
@@ -2446,52 +2447,234 @@ const script = () => {
           dw = w;
           dh = dw / ir;
         }
-        const dx = (w - dw) * 0.5;
-        const dy = (h - dh) * 0.5;
-        ctx.clearRect(0, 0, w, h);
-        ctx.drawImage(img, dx, dy, dw, dh);
+        ctx.drawImage(img, (w - dw) * 0.5, (h - dh) * 0.5, dw, dh);
             }
-            bindYachtFrames(thumb, canvas, images, scroller, reduceMotion) {
-        if (!thumb || !canvas || !images.length) return;
-        const state = { i: 0 };
-        const paint = (progress) => {
-          const i = Math.round(
-            gsap.utils.clamp(0, 1, progress) * (images.length - 1),
+            closeYachtBitmap(player, i) {
+        const bmp = player.bitmaps[i];
+        if (!bmp) return;
+        if (typeof bmp.close === "function") {
+          try {
+            bmp.close();
+          } catch (err) {}
+        }
+        player.bitmaps[i] = null;
+            }
+            evictYachtFrames(player) {
+        const keep = 30;
+        const cur = player.current;
+        for (let i = 0; i < player.count; i++) {
+          if (!player.bitmaps[i]) continue;
+          if (Math.abs(i - cur) > keep) this.closeYachtBitmap(player, i);
+        }
+            }
+            pumpYachtQueue(player) {
+        while (player.active < 6 && player.queue.length) {
+          player.active += 1;
+          player.queue.shift()();
+        }
+            }
+            rasterYachtFrame(im, rw, rh) {
+        if (typeof createImageBitmap === "function") {
+          return createImageBitmap(im, {
+            resizeWidth: rw,
+            resizeHeight: rh,
+            resizeQuality: "high",
+          }).catch(() => {
+            const c = document.createElement("canvas");
+            c.width = rw;
+            c.height = rh;
+            const cctx = c.getContext("2d", { alpha: false });
+            cctx.drawImage(im, 0, 0, rw, rh);
+            return c;
+          });
+        }
+        const c = document.createElement("canvas");
+        c.width = rw;
+        c.height = rh;
+        const cctx = c.getContext("2d", { alpha: false });
+        cctx.drawImage(im, 0, 0, rw, rh);
+        return Promise.resolve(c);
+            }
+            ensureYachtFrame(player, i) {
+        if (!player || i < 0 || i >= player.count) return Promise.resolve(null);
+        if (player.bitmaps[i]) return Promise.resolve(player.bitmaps[i]);
+        if (player.inflight[i]) return player.inflight[i];
+        const job = new Promise((resolve) => {
+          const run = () => {
+            const im = new Image();
+            im.decoding = "async";
+            im.onload = () => {
+              this.rasterYachtFrame(im, player.size.rw, player.size.rh)
+                .then((bmp) => {
+                  player.active -= 1;
+                  player.inflight[i] = null;
+                  player.bitmaps[i] = bmp;
+                  this.evictYachtFrames(player);
+                  if (Math.abs(i - player.current) <= 1) {
+                    this.drawYachtFrame(player.canvas, bmp);
+                    player.canvas.classList.add("is-ready");
+                  }
+                  this.pumpYachtQueue(player);
+                  resolve(bmp);
+                })
+                .catch(() => {
+                  player.active -= 1;
+                  player.inflight[i] = null;
+                  this.pumpYachtQueue(player);
+                  resolve(null);
+                });
+            };
+            im.onerror = () => {
+              player.active -= 1;
+              player.inflight[i] = null;
+              this.pumpYachtQueue(player);
+              resolve(null);
+            };
+            im.src = player.urls[i];
+          };
+          player.queue.push(run);
+          this.pumpYachtQueue(player);
+        });
+        player.inflight[i] = job;
+        return job;
+            }
+            prefetchYachtWindow(player, i) {
+        player.current = i;
+        this.ensureYachtFrame(player, i);
+        for (let d = 1; d <= 14; d++) this.ensureYachtFrame(player, i + d);
+        for (let d = 1; d <= 6; d++) this.ensureYachtFrame(player, i - d);
+            }
+            nearestYachtFrame(bitmaps, i) {
+        if (bitmaps[i]) return bitmaps[i];
+        for (let d = 1; d < bitmaps.length; d++) {
+          if (bitmaps[i + d]) return bitmaps[i + d];
+          if (i - d >= 0 && bitmaps[i - d]) return bitmaps[i - d];
+        }
+        return null;
+            }
+            initYachtFrames(thumb, canvas, scroller, reduceMotion, copy) {
+        if (!thumb || !canvas) return;
+        const count = this.yachtFrameCount(canvas);
+        const player = {
+          canvas,
+          count,
+          urls: Array.from({ length: count }, (_, i) =>
+            this.yachtFrameUrl(canvas, i),
+          ),
+          bitmaps: new Array(count),
+          inflight: new Array(count),
+          queue: [],
+          active: 0,
+          current: 0,
+          size: this.yachtDecodeSize(canvas),
+          state: { f: 0 },
+        };
+        this.yachtPlayer = player;
+        this.ensureYachtFrame(player, 0).then(() => {
+          if (!this.el) return;
+          this.bindYachtFrames(
+            thumb,
+            canvas,
+            player,
+            scroller,
+            reduceMotion,
+            copy,
           );
-          if (i === state.i && canvas.dataset.painted === "1") return;
-          state.i = i;
-          this.drawYachtFrame(canvas, images[i]);
+          for (let i = 1; i < Math.min(28, count); i++) {
+            this.ensureYachtFrame(player, i);
+          }
+          for (let i = Math.max(28, count - 12); i < count; i++) {
+            this.ensureYachtFrame(player, i);
+          }
+          if (typeof ScrollTrigger !== "undefined") ScrollTrigger.refresh();
+        });
+            }
+            bindYachtFrames(thumb, canvas, player, scroller, reduceMotion, copy) {
+        if (!thumb || !canvas || !player) return;
+        const count = player.count;
+        const state = player.state;
+        let lastDraw = -1;
+        const paint = () => {
+          const i = Math.round(gsap.utils.clamp(0, count - 1, state.f));
+          player.current = i;
+          this.prefetchYachtWindow(player, i);
+          const exact = player.bitmaps[i];
+          if (exact) {
+            if (i === lastDraw && canvas.dataset.painted === "1") return;
+            lastDraw = i;
+            this.drawYachtFrame(canvas, exact);
+            canvas.classList.add("is-ready");
+            canvas.dataset.painted = "1";
+            return;
+          }
+          const img = this.nearestYachtFrame(player.bitmaps, i);
+          if (!img) return;
+          this.drawYachtFrame(canvas, img);
+          canvas.classList.add("is-ready");
           canvas.dataset.painted = "1";
         };
-        this.drawYachtFrame(canvas, images[0]);
-        canvas.dataset.painted = "1";
+        paint();
         if (this.onYachtResize) {
           window.removeEventListener("resize", this.onYachtResize);
         }
-        this.onYachtResize = () =>
-          this.drawYachtFrame(canvas, images[state.i]);
+        let resizeT;
+        this.onYachtResize = () => {
+          clearTimeout(resizeT);
+          resizeT = setTimeout(() => {
+            if (!this.yachtPlayer) return;
+            this.yachtPlayer.size = this.yachtDecodeSize(canvas);
+            for (let i = 0; i < this.yachtPlayer.count; i++) {
+              this.closeYachtBitmap(this.yachtPlayer, i);
+            }
+            lastDraw = -1;
+            this.prefetchYachtWindow(this.yachtPlayer, this.yachtPlayer.current);
+          }, 180);
+        };
         window.addEventListener("resize", this.onYachtResize);
         if (reduceMotion) {
-          paint(0);
+          state.f = 0;
+          paint();
           return;
         }
-        const pinLen = () =>
-          Math.round(
-            viewport.h * (images.length <= 8 ? 2.2 : 3.2),
-          );
-        this.stYachtFrames = ScrollTrigger.create({
-          trigger: thumb,
-          start: "top top",
-          end: () => `+=${pinLen()}`,
-          pin: true,
-          pinSpacing: true,
-          scrub: 0.45,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-          ...(scroller ? { scroller } : {}),
-          onUpdate: (self) => paint(self.progress),
-          onRefresh: (self) => paint(self.progress),
+        if (this.tlYachtFrames) this.tlYachtFrames.kill();
+        this.tlYachtFrames = gsap.timeline({
+          defaults: { ease: "none" },
+          scrollTrigger: {
+            trigger: thumb,
+            start: "top top",
+            end: () =>
+              `+=${Math.round(
+                viewport.h * (viewport.w > 991 ? 7.2 : 5.6),
+              )}`,
+            pin: true,
+            pinSpacing: true,
+            scrub: viewport.w > 991 ? 0.55 : 0.4,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+            refreshPriority: 2,
+            ...(scroller ? { scroller } : {}),
+            onRefresh: paint,
+          },
         });
+        this.tlYachtFrames.fromTo(
+          state,
+          { f: 0 },
+          {
+            f: count - 1,
+            duration: 1,
+            immediateRender: false,
+            onUpdate: paint,
+          },
+          0,
+        );
+        if (copy) {
+          this.tlYachtFrames.fromTo(
+            copy,
+            { autoAlpha: 0, y: 36 },
+            { autoAlpha: 1, y: 0, duration: 0.12 },
+            0.7,
+          );
+        }
             }
             animationScrub() {
         if (!this.el || this.yachtReady) return;
@@ -2501,10 +2684,10 @@ const script = () => {
           .forEach((el) => new ParallaxImage({ el: el.querySelector("img") }));
         const thumb = $(this.el).select(".home-team-thumb");
         const inner = $(this.el).select(".home-team-thumb-inner");
-        const canvas = $(this.el).select(".yacht-frame-canvas");
+        if (!thumb || !inner) return;
+        const canvas = inner.querySelector(".yacht-frame-canvas");
         const media = inner.querySelectorAll("canvas, img, video");
         const copy = $(this.el).select(".yacht-copy");
-        if (!thumb || !inner) return;
 
         const radius = `${cvUnit(8, "rem")}px`;
         const clipFrom =
@@ -2520,17 +2703,13 @@ const script = () => {
         if (media.length) gsap.set(media, { scale: 1.18, transformOrigin: "50% 70%" });
         if (copy) gsap.set(copy, { autoAlpha: 0, y: 28 });
 
-        this.loadYachtFrames(canvas).then((images) => {
-          if (!this.el) return;
-          this.bindYachtFrames(
-            thumb,
-            canvas,
-            images,
-            viewport.w <= 767 ? document.querySelector(".body-inner") : null,
-            reduceMotion,
-          );
-          if (typeof ScrollTrigger !== "undefined") ScrollTrigger.refresh();
-        });
+        this.initYachtFrames(
+          thumb,
+          canvas,
+          viewport.w <= 767 ? document.querySelector(".body-inner") : null,
+          reduceMotion,
+          copy,
+        );
 
         if (reduceMotion) {
           gsap.set(inner, { clipPath: clipTo, webkitClipPath: clipTo });
@@ -2565,14 +2744,6 @@ const script = () => {
             0,
           );
         }
-        if (copy) {
-          this.tlScaleImage.fromTo(
-            copy,
-            { autoAlpha: 0, y: 28 },
-            { autoAlpha: 1, y: 0, duration: 0.4 },
-            0.45,
-          );
-        }
       }
       animationReveal() {}
       interact() {}
@@ -2589,9 +2760,19 @@ const script = () => {
                     this.tlScaleImage.kill();
                     this.tlScaleImage = null;
                 }
+                if (this.tlYachtFrames) {
+                    this.tlYachtFrames.kill();
+                    this.tlYachtFrames = null;
+                }
                 if (this.stYachtFrames) {
                     this.stYachtFrames.kill();
                     this.stYachtFrames = null;
+                }
+                if (this.yachtPlayer) {
+                    for (let i = 0; i < this.yachtPlayer.count; i++) {
+                        this.closeYachtBitmap(this.yachtPlayer, i);
+                    }
+                    this.yachtPlayer = null;
                 }
             }
         },
@@ -2627,7 +2808,7 @@ const script = () => {
         const paint = (p) => {
           const w = stage.clientWidth;
           const h = stage.clientHeight;
-          const phone = w <= 767;
+          const phone = viewport.w <= 767;
           const u = Math.min(w, h);
           const titleIn = easeTitle(gsap.utils.clamp(0, 1, p / 0.24));
           const tagIn = easeTitle(gsap.utils.clamp(0, 1, (p - 0.18) / 0.14));
@@ -2716,6 +2897,7 @@ const script = () => {
           scrub: 0.9,
           anticipatePin: 1,
           invalidateOnRefresh: true,
+          refreshPriority: -1,
           ...(scroller ? { scroller } : {}),
           onUpdate: (self) => paint(self.progress),
           onRefresh: (self) => paint(self.progress),
@@ -2727,7 +2909,7 @@ const script = () => {
           this.st = null;
         }
       }
-    },
+        },
         Journal: class extends TriggerSetup {
             constructor() {
                 super();

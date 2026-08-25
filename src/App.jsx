@@ -8,7 +8,7 @@ const NAV_LINKS = [
   { href: "#explore", label: "Explore" },
 ];
 
-const YACHT_FRAME_COUNT = 5;
+const YACHT_FRAME_COUNT = 155;
 
 const LOOKBOOK_PHOTOS = [
   "/images/hero.jpg",
@@ -23,7 +23,7 @@ const ECOSYSTEM_SLIDES = [
   {
     title: "Hub",
     desc: "St. George's waterfront for movement, recovery and wellness. Wearables, coaching and nutrition, distinct from clinical care.",
-    thumb: "/images/ecosystem-hub.png",
+    thumb: "/images/ecosystem-hub.jpg",
     images: [
       "/images/hub1.png",
       "/images/hub2.png",
@@ -47,7 +47,7 @@ const ECOSYSTEM_SLIDES = [
   {
     title: "The Water",
     desc: "The Silent Yachts, a 62-foot solar-electric catamaran, home-ported at St. George's Harbour, offered through fractional co-ownership.",
-    thumb: "/images/The-water.jpg",
+    thumb: "/images/ecosystem-thewater.jpg",
     images: [
       "/images/ecosystem-water-3.png",
       "/images/ecosystem-water-2.png",
@@ -69,7 +69,7 @@ const ECOSYSTEM_SLIDES = [
   {
     title: "Experience",
     desc: "Hotels, golf, diving, and coastal wellness across Bermuda. From St. Regis and Five Forts to reefs, shipwrecks and retreats.",
-    thumb: "/images/ecosystem-experience.jpg",
+    thumb: "/images/Experience.jpg",
     images: [
       "/images/ex1.png",
       "/images/ex2.png",
@@ -1485,7 +1485,7 @@ export default function App() {
                       <div className="home-yacth-bg-img">
                         <div className="home-yacth-bg-img-inner">
                           <img
-                            src="/images/ecosystem-hub.png"
+                            src="/images/ecosystem-hub.jpg"
                             loading="lazy"
                             alt=""
                             className="img-default"

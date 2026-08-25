@@ -5,14 +5,10 @@ const NAV_LINKS = [
   { href: "#ecosystem", label: "Ecosystem" },
   { href: "#elara", label: "Elara AI" },
   { href: "#experience", label: "Experience" },
-  { href: "#health", label: "Health" },
+  { href: "#explore", label: "Explore" },
 ];
 
-const STACK_PHOTOS = {
-  a: "/images/stack-card-1.png?v=2",
-  b: "/images/stack-card-2.png?v=2",
-  c: "/images/stack-card-3.png?v=2",
-};
+const YACHT_FRAME_COUNT = 5;
 
 const LOOKBOOK_PHOTOS = [
   "/images/hero.jpg",
@@ -25,69 +21,66 @@ const LOOKBOOK_PHOTOS = [
 
 const ECOSYSTEM_SLIDES = [
   {
+    title: "Hub",
+    desc: "St. George's waterfront for movement, recovery and wellness. Wearables, coaching and nutrition, distinct from clinical care.",
+    thumb: "/images/ecosystem-hub.png",
+    images: [
+      "/images/hub1.png",
+      "/images/hub2.png",
+      "/images/hub3.png",
+      "/images/hub1.png",
+      "/images/hub5.png",
+    ],
+  },
+  {
     title: "Snowy",
-    desc: "A climate shell that stays cool, still, and even. Cabins hold a quiet winter of their own, wherever the sun sits on the water.",
+    desc: "SOLLUS' signature conveyance, an electric Rolls-Royce Corniche connecting the waterfront and Yacht in silent, low-carbon luxury.",
     theme: "snowy",
     thumb: "/images/ecosystem-snowy.jpg",
     images: [
-      "/images/689eb59b898d833188934eba_1.jpg",
-      "/images/689eb59b898d833188934ede_Rectangle%2042175.jpg",
-      "/images/689eb59b898d833188934edc_Rectangle%2042177.jpg",
-      "/images/689eb59b898d833188934edd_Rectangle%2042178.jpg",
-      "/images/689eb59b898d833188934eb9_3.jpg",
+      "/images/snoxy1.png",
+      "/images/snoxy2.png",
+      "/images/snoxy3.png",
+      "/images/snoxy1.png",
     ],
   },
   {
-    title: "Hub",
-    desc: "Power, climate, and guest flow meet in one calm center. The vessel is readable at a glance, so the day stays simple.",
-    thumb: "/images/689eb59b898d833188934ecb_Dining%20%281%29.jpg",
+    title: "The Water",
+    desc: "The Silent Yachts, a 62-foot solar-electric catamaran, home-ported at St. George's Harbour, offered through fractional co-ownership.",
+    thumb: "/images/The-water.jpg",
     images: [
-      "/images/691d6e790245de253c8adbda_Kudanil%20Komodo%20_174_JJ_13892.jpg",
-      "/images/691d6e7e0a64bb6329aff517_Kudanil_JackJohns_LR_548_JJ_14544.jpg",
-      "/images/691d6e82f831c5a9f59dc481_kudanil-explorer-expedition-yacht-top-deck-7.jpg",
-      "/images/691d6ea2a6232500fb00d4d3_Kudanil%20Komodo%20_268_JJ_12954.jpg",
-      "/images/691d6e70a84ced857264c149_Kudanil_JackJohns_LR_549_JJ_13325.jpg",
+      "/images/ecosystem-water-3.png",
+      "/images/ecosystem-water-2.png",
+      "/images/ecosystem-water.png",
+      "/images/ecosystem-water-1.png",
     ],
   },
   {
-    title: "Water",
-    desc: "Makers, showers, and the sea itself. Fresh water on demand, and a hull that lives in the element it was built for.",
-    thumb: "/images/689eb59b898d833188934ee0_Guest%20Areas.jpg",
+    title: "Platform",
+    desc: "Connect your wearables. Elara reads the data and distils it into a single Wellness Score — precision measurement, made simple.",
+    thumb: "/images/platformbg.png",
     images: [
-      "/images/689eb59b898d833188934ee1_Rectangle%2042184.jpg",
-      "/images/689eb59b898d833188934ec9_12.jpg",
-      "/images/689eb59b898d833188934ec8_13.jpg",
-      "/images/689eb59b898d833188934ec6_14.jpg",
-      "/images/691d6f1d5dc2a44005aff730_kudanil-explorer-expedition-yacht-monkey-island-jacuzzi-4.jpg",
+      "/images/platform.png",
+      "/images/platform1.png",
+      "/images/platform2.png",
+      "/images/platform3.png",
     ],
   },
   {
-    title: "Hospitality",
-    desc: "Identical suites, shared tables, unhurried service. Sixteen guests, one standard of care — no one seated second.",
-    thumb: "/images/689eb59b898d833188934eca_Activities%20%281%29.jpg",
+    title: "Experience",
+    desc: "Hotels, golf, diving, and coastal wellness across Bermuda. From St. Regis and Five Forts to reefs, shipwrecks and retreats.",
+    thumb: "/images/ecosystem-experience.jpg",
     images: [
-      "/images/691d37da16b82ee8f7a08bf8_Kudanil_JackJohns_LR_12_JJ_28907-Enhanced-NR-Edit-Edit%20%281%29.jpg",
-      "/images/691d3824da6ac87ed21b34c1_Screenshot%202025-11-19%20112306.png",
-      "/images/691d382da4701e13c6f4b552_Kudanil%20Komodo%20_21_JJ_13342.jpg",
-      "/images/691d383c1a96bc25b90527b3_ATLAS_Kudanil_LR-87-7409.jpg",
-      "/images/691d383f6d7cbbfbc8fff24d_Kudanil_JackJohns_LR_58_JJ_18056%20%281%29.jpg",
-    ],
-  },
-  {
-    title: "Elara",
-    desc: "Onboard intelligence that reads rest, recovery, and rhythm. Guidance when you want it, quiet when you don’t.",
-    thumb: "/images/689eb59b898d833188934ee0_Guest%20Areas.jpg",
-    images: [
-      "/images/689eb59b898d833188934ee1_Rectangle%2042184.jpg",
-      "/images/689eb59b898d833188934eba_1.jpg",
-      "/images/689eb59b898d833188934ec9_12.jpg",
-      "/images/689eb59b898d833188934edc_Rectangle%2042177.jpg",
-      "/images/689eb59b898d833188934eb9_3.jpg",
+      "/images/ex1.png",
+      "/images/ex2.png",
+      "/images/ex3.png",
+      "/images/ex4.png",
+      "/images/ex5.png",
     ],
   },
   {
     title: "Protection",
-    desc: "Redundant systems and a quiet watch. The hull keeps the world out until you choose to open it.",
+    desc: "Sollus Re explores how consented, continuous data could enable faster, fairer protection.",
     thumb: "/images/689eb59b898d833188934edf_Cabin.jpg",
     images: [
       "/images/691d382da4701e13c6f4b552_Kudanil%20Komodo%20_21_JJ_13342.jpg",
@@ -199,15 +192,46 @@ function HeaderNavLink({ href, label }) {
   );
 }
 
+const STACK_PANELS = {
+  gold: {
+    heading: ["On the Waterfront,", "Restoration Begins."],
+    body: "At St. George's, the Hub unites movement, recovery, nutrition and coaching, shaped by your wearable-informed baseline. A non-medical wellbeing experience, distinct from clinical care.",
+    photos: {
+      a: "/images/stack-gold-1.png?v=3",
+      b: "/images/stack-gold-2.png?v=3",
+      c: "/images/stack-gold-3.png?v=3",
+    },
+  },
+  navy: {
+    heading: ["Under solar sail,", "silence at sea"],
+    body: "Step ashore for championship golf, guided reef and shipwreck diving, or a restorative retreat. From St. Regis and Five Forts to BIOS, every experience flows naturally from the yacht.",
+    photos: {
+      a: "/images/stack-navy-1.png?v=1",
+      b: "/images/stack-navy-2.png?v=1",
+      c: "/images/stack-navy-3.png?v=1",
+    },
+  },
+  teal: {
+    heading: ["Bermuda,", "Beyond the Season"],
+    body: "Sollus extends Bermuda beyond its May - August peak, connecting its waterfronts, reefs and premium experience through low - carbon land and marine mobility, year - round and with respect for the island's natural environment.",
+    photos: {
+      a: "/images/stack-teal-1.png?v=1",
+      b: "/images/stack-teal-2.png?v=1",
+      c: "/images/stack-teal-3.png?v=1",
+    },
+  },
+};
+
 function DanubeStackPanel({ theme }) {
+  const copy = STACK_PANELS[theme];
   return (
     <article className={`stack-panel is-${theme}`}>
       <div className="stack-panel-inner">
         <div className="stack-copy">
           <h2 className="stack-heading">
-            On the Danube,
+            {copy.heading[0]}
             <br />
-            connected to the world
+            {copy.heading[1]}
           </h2>
           <a href="/contact" className="stack-cta">
             Get Your Free Quote
@@ -215,20 +239,16 @@ function DanubeStackPanel({ theme }) {
         </div>
         <div className="stack-photos" aria-hidden="true">
           <figure className="stack-photo is-a">
-            <img src={STACK_PHOTOS.a} alt="" />
+            <img src={copy.photos.a} alt="" />
           </figure>
           <figure className="stack-photo is-b">
-            <img src={STACK_PHOTOS.b} alt="" />
+            <img src={copy.photos.b} alt="" />
           </figure>
           <figure className="stack-photo is-c">
-            <img src={STACK_PHOTOS.c} alt="" />
+            <img src={copy.photos.c} alt="" />
           </figure>
         </div>
-        <p className="stack-body">
-          Its riverside location allows for direct launches and effortless
-          access to global waters, ensuring your yacht can reach you anywhere in
-          the world.
-        </p>
+        <p className="stack-body">{copy.body}</p>
       </div>
     </article>
   );
@@ -948,7 +968,7 @@ export default function App() {
                 href="/contact"
                 className="header-btn only-desk glass-nav-cta w-inline-block"
               >
-                <span className="glass-nav-cta-label">Get in Touch</span>
+                <span className="glass-nav-cta-label">Start Your Journey</span>
                 <div
                   id="w-node-cdac694a-dd2f-8274-737d-feafb7381b46-d8e4eb46"
                   className="header-btn-dark"
@@ -1031,7 +1051,7 @@ export default function App() {
               ))}
             </ul>
             <a href="/contact" className="mobile-nav-cta">
-              Get in Touch
+              Start Your Journey
             </a>
             <p className="mobile-nav-tagline">Your shell of comfort</p>
           </nav>
@@ -1407,24 +1427,26 @@ export default function App() {
                           <div className="home-hero-title">
                             <h2 className="heading h1">
                               <span className="home-hero-title-line">
-                                A Private World
+                                One Island.
                               </span>
                               <span className="home-hero-title-line">
-                                Held In Comfort
+                                One System.
                               </span>
                             </h2>
                           </div>
                           <div className="home-hero-desc">
                             <div className="heading h4">
-                              A quiet home on open water.
-                              <br />
-                              Care and connection, wherever you roam.
+                              SOLLUS is a Bermuda-rooted ecosystem connecting
+                              low-carbon conveyance, waterfront wellness,
+                              precision measurement and protection, one
+                              integrated system for how people arrive, restore
+                              and thrive.
                             </div>
                           </div>
                           <div className="home-hero-actions">
                             <a
                               className="home-hero-btn is-fill"
-                              href="#experience"
+                              href="#explore"
                             >
                               Explore the Journey
                             </a>
@@ -1463,7 +1485,7 @@ export default function App() {
                       <div className="home-yacth-bg-img">
                         <div className="home-yacth-bg-img-inner">
                           <img
-                            src="/images/ecosystem-snowy.jpg"
+                            src="/images/ecosystem-hub.png"
                             loading="lazy"
                             alt=""
                             className="img-default"
@@ -1509,7 +1531,7 @@ export default function App() {
                   </div>
                 </section>
               </div>
-              <div id="experience" className="home-article-wrap seen-in">
+              {/* <div id="experience" className="home-article-wrap seen-in">
                 <section className="home-article">
                   <div className="seen-in-inner">
                     <h2 className="seen-in-heading">
@@ -2225,7 +2247,7 @@ export default function App() {
                     </div>
                   </div>
                 </section>
-              </div>
+              </div> */}
               <section id="elara" className="wellness-wrap">
                 <div className="wellness">
                   <header className="wellness-intro">
@@ -2282,11 +2304,11 @@ export default function App() {
                         </svg>
                       </span>
                       <h3 className="wellness-card-title">
-                        Integrated Health Monitoring
+                        Connect your wearables
                       </h3>
                       <p className="wellness-card-desc">
-                        Monitor blood sugar, heart rate, activity and more in
-                        one easy-to-understand dashboard.
+                        Oura, WHOOP and Fitbit sync in read-only. Garmin is
+                        coming soon - one quiet place for every reading.
                       </p>
                       <span className="wellness-card-more">Learn More</span>
                     </article>
@@ -2306,11 +2328,11 @@ export default function App() {
                         </svg>
                       </span>
                       <h3 className="wellness-card-title">
-                        Unlimited Connectivity
+                        Connect · Analyse · Score
                       </h3>
                       <p className="wellness-card-desc">
-                        Automatically sync your wearable devices and health apps
-                        to keep all your data.
+                        Your signals resolve into a single Wellness Score,
+                        updated daily and easy to act on.
                       </p>
                       <span className="wellness-card-more">Learn More</span>
                     </article>
@@ -2396,11 +2418,11 @@ export default function App() {
                           </svg>
                         </span>
                         <h3 className="wellness-card-title">
-                          Seamless Integration
+                          Elara, your guide
                         </h3>
                         <p className="wellness-card-desc">
-                          Connect all your health devices and apps effortlessly
-                          to keep all your data in one place.
+                          Wellness insight and coaching that reads the pattern
+                          beneath the data. Clearly non-medical.
                         </p>
                         <span className="wellness-card-more">Learn More</span>
                       </div>
@@ -2418,11 +2440,11 @@ export default function App() {
                           </svg>
                         </span>
                         <h3 className="wellness-card-title">
-                          Chat AI Assistant
+                          Private by design
                         </h3>
                         <p className="wellness-card-desc">
-                          Ask anything about your health and get fast answers
-                          directly from the app.
+                          Separate consent for wellness, clinical and research.
+                          Nothing flows automatically between them.
                         </p>
                         <span className="wellness-card-more">Learn More</span>
                       </div>
@@ -2430,7 +2452,7 @@ export default function App() {
                   </div>
                 </div>
               </section>
-              <section className="stack-wrap">
+              <section id="experience" className="stack-wrap">
                 <div className="stack-stage">
                   <DanubeStackPanel theme="gold" />
                   <DanubeStackPanel theme="navy" />
@@ -2714,31 +2736,37 @@ export default function App() {
                   </div>
                 </section>
               </div>
-              <div className="home-team-wrap">
+              <div id="explore" className="home-team-wrap">
                 <section className="home-team">
                   <div className="home-team-thumb">
                     <div className="home-team-thumb-inner">
-                      <video
-                        className="img-default img-fill yacht-bg-video"
-                        src="/images/Yacht.mp4"
-                        poster="/images/register-yacht.png"
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        preload="auto"
-                        disablePictureInPicture
+                      <img
+                        className="img-default img-fill yacht-frame-fallback"
+                        src="/images/Yacht_frames/ezgif-frame-001.jpg"
+                        alt=""
+                      />
+                      <canvas
+                        className="yacht-frame-canvas"
+                        data-frame-count={YACHT_FRAME_COUNT}
+                        data-frame-src="/images/Yacht_frames/ezgif-frame-{n}.jpg"
+                        aria-hidden="true"
                       />
                     </div>
                     <div className="yacht-copy">
-                      <h2 className="yacht-copy-heading">Yacht</h2>
+                      <h2 className="yacht-copy-heading">
+                        The Water. <br />
+                        Silent Yachts
+                      </h2>
                       <div className="yacht-copy-card">
                         <p>
-                          Our eight spacious, above-deck cabins accommodate up
-                          to 16 guests in quiet comfort. Each features
-                          floor-to-ceiling windows, en-suite bathrooms, and
-                          private balconies – all identical, so everyone enjoys
-                          the same space and stunning views.
+                          Solar - electric catamarans built for silent, self -
+                          sufficient cruising, combining effortless passages,
+                          extended range and spacious living under sun and sail.
+                          Ownership is shared through fractional co-ownership,
+                          giving each partner meaningful time aboard without the
+                          weight of sole stewardship. <br />
+                          Registering now secures priority access and the first
+                          opportunity to engage as the programme takes shape.
                         </p>
                       </div>
                     </div>
@@ -2756,10 +2784,7 @@ export default function App() {
                     </div>
                     <div className="lookbook-ring" aria-hidden="true">
                       {LOOKBOOK_PHOTOS.map((src, i) => (
-                        <figure
-                          key={src}
-                          className={`lookbook-shot is-${i}`}
-                        >
+                        <figure key={src} className={`lookbook-shot is-${i}`}>
                           <img src={src} alt="" />
                         </figure>
                       ))}
@@ -2844,43 +2869,30 @@ export default function App() {
                       <span className="site-footer-global">Global</span>
                     </span>
                   </a>
-                  <p className="site-footer-tagline">Your shell of comfort</p>
-                  <p className="site-footer-copy">© 2026 Sollus Global</p>
+                  <p className="site-footer-tagline">
+                    Transformation. Restoration. Protection
+                  </p>
+                  <p className="site-footer-copy">
+                    A Bermuda - rooted integrated ecosystem
+                  </p>
                 </div>
                 <div className="site-footer-col">
-                  <h3>General</h3>
-                  <a href="/">Home</a>
-                  <a href="#ecosystem">Ecosystem</a>
-                  <a href="/bespoke-expeditions">The Journey</a>
-                  <a href="#elara">Elara AI</a>
+                  {/* <h3>General</h3> */}
+                  <a href="/">Journey </a>
+                  <a href="#ecosystem">Elara</a>
+                  <a href="#explore">Explore</a>
                   <a href="#experience">Experience</a>
-                  <a href="#health">Health</a>
-                  <a href="/faq">FAQ</a>
-                  <a href="/advisor-access" className="site-footer-portal">
-                    Partners portal
-                    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                      <path
-                        d="M6 3.2h6.8V10"
-                        stroke="currentColor"
-                        strokeWidth="1.4"
-                        strokeLinecap="round"
-                      />
-                      <path
-                        d="M9.2 6.8 4.2 11.8"
-                        stroke="currentColor"
-                        strokeWidth="1.4"
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                  </a>
                 </div>
                 <div className="site-footer-col">
-                  <h3>Legal</h3>
-                  <a href="/terms-conditions">Legal notice</a>
+                  {/* <h3>Legal</h3> */}
+                  <a href="/terms-conditions">Legal</a>
                   <a href="/privacy-policy">Privacy Policy</a>
+                  <a href="/privacy-policy">Terms</a>
+                  <a href="/privacy-policy">FAQ</a>
+                  <a href="/privacy-policy">Contact</a>
                 </div>
                 <div className="site-footer-col">
-                  <h3>Contacts</h3>
+                  {/* <h3>Contacts</h3> */}
                   <a href="mailto:info@sollus-digital.com">
                     info@sollus-digital.com
                   </a>

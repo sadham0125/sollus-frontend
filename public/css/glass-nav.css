@@ -211,16 +211,19 @@
   scroll-margin-top: 0;
 }
 
-#elara,
-#experience,
-#health {
+#elara {
   scroll-margin-top: 12rem;
+}
+
+#experience,
+#explore {
+  scroll-margin-top: 8rem;
 }
 
 @media screen and (max-width: 991px) {
   #elara,
   #experience,
-  #health {
+  #explore {
     scroll-margin-top: 0;
   }
 }
@@ -269,7 +272,10 @@
 }
 
 .header.glass-nav .header-menu-link:hover .txt,
-.header.glass-nav .header-menu-link:hover .glass-nav-link {
+.header.glass-nav .header-menu-link:hover .glass-nav-link,
+.header.glass-nav .header-menu-link.is-active .txt,
+.header.glass-nav .header-menu-link.w--current .txt,
+.header.glass-nav .header-menu-link[aria-current="page"] .txt {
   color: #e8c56a !important;
 }
 
@@ -422,8 +428,10 @@
     line-height: 1.05;
   }
 
-  .header.glass-nav .mobile-nav-link:hover {
-    color: #003357;
+  .header.glass-nav .mobile-nav-link:hover,
+  .header.glass-nav .mobile-nav-link.is-active,
+  .header.glass-nav .mobile-nav-link[aria-current="page"] {
+    color: #a67b28;
   }
 
   .header.glass-nav .mobile-nav-cta {

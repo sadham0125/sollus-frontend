@@ -74,165 +74,216 @@ const sollusHeaderHide = {
 };
 
 const script = () => {
-  $.easing.exponentialEaseOut = function (t) {
-    return Math.min(1, 1.001 - Math.pow(2, -10 * t));
-  };
-  $.fn.hasAttr = function (name) {
-    return this.attr(name) !== undefined;
-  };
-  $.fn.select = function (name) {
-    return this.find(name).get(0);
-  };
-  $.fn.selectAll = function (name) {
-    return this.find(name);
-  };
-  barba.use(barbaPrefetch);
+    $.easing.exponentialEaseOut = function (t) {
+        return Math.min(1, 1.001 - Math.pow(2, -10 * t));
+    };
+    $.fn.hasAttr = function (name) {
+        return this.attr(name) !== undefined;
+    };
+    $.fn.select = function (name) {
+        return this.find(name).get(0);
+    };
+    $.fn.selectAll = function (name) {
+        return this.find(name);
+    };
+    barba.use(barbaPrefetch);
 
-  gsap.registerPlugin(ScrollTrigger, SplitText);
-  if (window.innerWidth <= 767) {
-    ScrollTrigger.defaults({
+    gsap.registerPlugin(ScrollTrigger, SplitText);
+    if (window.innerWidth <= 767) {
+        ScrollTrigger.defaults({
       scroller: ".body-inner",
-    });
-  }
-  const viewport = {
-    w: window.innerWidth,
-    h: window.innerHeight,
-  };
+        });
+    }
+    const viewport = {
+        w: window.innerWidth,
+        h: window.innerHeight,
+    };
   const device = { desktop: 991, tablet: 767, mobile: 479 };
-  const cvUnit = (val, unit) => {
-    let result;
-    switch (true) {
+    const cvUnit = (val, unit) => {
+        let result;
+        switch (true) {
       case unit === "vw":
-        result = window.innerWidth * (val / 100);
-        break;
+                result = window.innerWidth * (val / 100);
+                break;
       case unit === "vh":
-        result = window.innerHeight * (val / 100);
-        break;
+                result = window.innerHeight * (val / 100);
+                break;
       case unit === "rem":
         result = (val / 10) * parseFloat($("html").css("font-size"));
-        break;
+                break;
       default:
         break;
-    }
-    return result;
+        }
+        return result;
   };
-  const debounce = (func, timeout = 300) => {
+    const debounce = (func, timeout = 300) => {
     let timer;
 
-    return (...args) => {
+        return (...args) => {
       clearTimeout(timer);
       timer = setTimeout(() => {
         func.apply(this, args);
       }, timeout);
     };
   };
-  function reinitializeWebflow(data) {
-    if (!window.Webflow) return;
+    function reinitializeWebflow(data) {
+        if (!window.Webflow) return;
     console.log("reinitializeWebflow");
 
-    try {
-      window.Webflow.destroy();
-      window.Webflow.ready();
-      const ix2 = window.Webflow.require("ix2");
-      if (ix2 && typeof ix2.init === "function") {
-        ix2.init();
-      }
-      const forms = window.Webflow.require("forms");
-      if (forms && typeof forms.ready === "function") {
-        forms.ready();
-      }
-      ["slider", "tabs", "dropdown", "navbar"].forEach((module) => {
-        try {
-          const mod = window.Webflow.require(module);
-          if (mod && typeof mod.ready === "function") {
-            mod.ready();
-          }
-        } catch (e) {}
-      });
-      if (window.Webflow.redraw) {
-        window.Webflow.redraw.up();
-      }
+		try {
+			window.Webflow.destroy();
+			window.Webflow.ready();
+			const ix2 = window.Webflow.require("ix2");
+			if (ix2 && typeof ix2.init === "function") {
+				ix2.init();
+			}
+			const forms = window.Webflow.require("forms");
+			if (forms && typeof forms.ready === "function") {
+				forms.ready();
+			}
+			["slider", "tabs", "dropdown", "navbar"].forEach((module) => {
+				try {
+					const mod = window.Webflow.require(module);
+					if (mod && typeof mod.ready === "function") {
+						mod.ready();
+					}
+				} catch (e) {}
+			});
+			if (window.Webflow.redraw) {
+				window.Webflow.redraw.up();
+        }
 
-      if (data) {
-        let parser = new DOMParser();
-        let dom = parser.parseFromString(data.next.html, "text/html");
-        let webflowPageId = $(dom).find("html").attr("data-wf-page");
-        $("html").attr("data-wf-page", webflowPageId);
-      }
-    } catch (e) {
-      console.warn("Webflow reinit failed:", e);
+        if (data) {
+            let parser = new DOMParser();
+            let dom = parser.parseFromString(data.next.html, "text/html");
+            let webflowPageId = $(dom).find("html").attr("data-wf-page");
+            $("html").attr("data-wf-page", webflowPageId);
+        }
+		} catch (e) {
+			console.warn("Webflow reinit failed:", e);
+		}
     }
-  }
-  const lerp = (a, b, t) => (1 - t) * a + t * b;
-  const distance = (x1, y1, x2, y2) => Math.hypot(x2 - x1, y2 - y1);
-  const normalize = (mousePos, maxDis) => (mousePos / maxDis - 0.5) * 2;
-  const childSelect = (parent) => {
+    const lerp = (a, b, t) => (1 - t) * a + t * b;
+    const distance = (x1, y1, x2, y2) => Math.hypot(x2 - x1, y2 - y1);
+    const normalize = (mousePos, maxDis) => (mousePos / maxDis - 0.5) * 2;
+    const childSelect = (parent) => {
     return (child) => (child ? $(parent).find(child) : parent);
   };
   const isInViewport = (el, orientation = "vertical") => {
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
     if (orientation == "horizontal") {
       return rect.left <= window.innerWidth && rect.right >= 0;
-    } else {
+        } else {
       return rect.top <= window.innerHeight && rect.bottom >= 0;
-    }
+        }
   };
-  const getAllScrollTrigger = (fn) => {
-    let triggers = ScrollTrigger.getAll();
+    const getAllScrollTrigger = (fn) => {
+        let triggers = ScrollTrigger.getAll();
     triggers.forEach((trigger) => {
-      trigger[fn]();
-    });
+            trigger[fn]();
+        });
   };
   const xSetter = (el) => gsap.quickSetter(el, "x", "px");
   const ySetter = (el) => gsap.quickSetter(el, "y", "px");
   const xGetter = (el) => gsap.getProperty(el, "x");
   const yGetter = (el) => gsap.getProperty(el, "y");
-  const documentHeightObserver = (action, data, callback) => {
-    let resizeObserver;
-    let debounceTimer;
-    let observerEl = document.documentElement;
-    let previousHeight = observerEl?.scrollHeight;
+    const documentHeightObserver = (action, data, callback) => {
+        let resizeObserver;
+        let debounceTimer;
+        let observerEl = document.documentElement;
+        let previousHeight = observerEl?.scrollHeight;
 
-    function onRefresh() {
-      clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(() => {
-        const currentHeight = observerEl.scrollHeight;
+        function onRefresh() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                const currentHeight = observerEl.scrollHeight;
 
-        if (currentHeight !== previousHeight) {
-          if (smoothScroll.lenis) {
-            smoothScroll.lenis.resize();
+                if (currentHeight !== previousHeight) {
+                    if (smoothScroll.lenis) {
+                        smoothScroll.lenis.resize();
             ScrollTrigger.getAll().forEach((trigger) => {
-              if (trigger.progress === 0) {
-                trigger.refresh();
-              }
-            });
-          }
-          if (callback) {
-            callback();
-          }
-          previousHeight = currentHeight;
+                            if (trigger.progress === 0) {
+                                trigger.refresh();
+                            }
+                        });
+                    }
+                    if (callback) {
+                        callback();
+                    }
+                    previousHeight = currentHeight;
+                }
+            }, 200);
         }
-      }, 200);
-    }
 
-    if (action === "init") {
-      if (!observerEl) return;
-      resizeObserver = new ResizeObserver(onRefresh);
-      resizeObserver.observe(observerEl);
-    } else if (action === "disconnect") {
-      if (resizeObserver) {
-        resizeObserver.disconnect();
-      }
+        if (action === "init") {
+            if (!observerEl) return;
+            resizeObserver = new ResizeObserver(onRefresh);
+            resizeObserver.observe(observerEl);
+        } else if (action === "disconnect") {
+            if (resizeObserver) {
+                resizeObserver.disconnect();
+            }
+        }
+    };
+  function ecosystemHubScrollY() {
+    const wrap = document.querySelector("#ecosystem");
+    if (!wrap) return 0;
+    const empty = wrap.querySelector(".home-yacth-empty-block");
+    const slide = wrap.querySelector(".home-yacth-main-slide");
+    const intro = empty ? empty.offsetHeight : window.innerHeight;
+    const slideH = slide ? slide.offsetHeight : window.innerHeight;
+    let wrapTop = 0;
+    for (let n = wrap; n; n = n.offsetParent) wrapTop += n.offsetTop;
+    return Math.max(0, Math.round(wrapTop + intro + slideH + 24));
+  }
+  function scrollToEcosystemHub() {
+    const y = ecosystemHubScrollY();
+    const finish = () => {
+      hideMobileHeader();
+      revealEcosystemHub();
+    };
+    if (smoothScroll.lenis) {
+      smoothScroll.start();
+      smoothScroll.lenis.scrollTo(y, {
+        duration: 1.35,
+        force: true,
+        lock: true,
+        onComplete: finish,
+      });
+    } else {
+      window.scrollTo({ top: y, behavior: "smooth" });
+      finish();
     }
-  };
+  }
   function navScrollOffset(el) {
     const id = typeof el === "string" ? el.replace(/^#/, "") : el && el.id;
     const isMobileNav = window.innerWidth <= 991;
-    const fullBleed = id === "ecosystem";
-    if (isMobileNav || fullBleed) return 0;
+    if (id === "ecosystem") return 0;
+    if (isMobileNav) return 0;
     const bar = document.querySelector(".glass-nav-bar");
     return bar ? -(bar.getBoundingClientRect().bottom + 12) : -80;
+  }
+  function revealEcosystemHub() {
+    const wrap = document.querySelector("#ecosystem");
+    if (!wrap) return;
+    const first = wrap.querySelector(".home-yacth-main-slide-item");
+    if (!first) return;
+    wrap
+      .querySelectorAll(
+        ".home-yacth-main-slide-text, .home-yacth-main-slide-gallery, .home-yacth-main-slide-thumb",
+      )
+      .forEach((el) => el.classList.remove("active"));
+    first.querySelector(".home-yacth-main-slide-text")?.classList.add("active");
+    first
+      .querySelector(".home-yacth-main-slide-gallery")
+      ?.classList.add("active");
+    first
+      .querySelector(".home-yacth-main-slide-thumb")
+      ?.classList.add("active");
+    wrap.querySelectorAll(".home-yacth-main-bar-item").forEach((el, i) => {
+      el.classList.toggle("active", i === 0);
+    });
   }
   function hideMobileHeader() {
     if (window.innerWidth > 991) return;
@@ -247,22 +298,45 @@ const script = () => {
       typeof target === "string" ? document.querySelector(target) : target;
     if (!el) return false;
     hideMobileHeader();
+    const finish = () => {
+      hideMobileHeader();
+      if (el.id === "ecosystem") revealEcosystemHub();
+    };
     if (smoothScroll.lenis) {
-      smoothScroll.lenis.scrollTo(el, {
-        offset: navScrollOffset(el),
-        duration,
-        force: true,
-        onComplete: hideMobileHeader,
-      });
+      if (el.id === "ecosystem") {
+        smoothScroll.lenis.scrollTo(ecosystemHubScrollY(), {
+          duration,
+          force: true,
+          onComplete: finish,
+        });
+      } else {
+        smoothScroll.lenis.scrollTo(el, {
+          offset: navScrollOffset(el),
+          duration,
+          force: true,
+          onComplete: finish,
+        });
+      }
     } else {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (el.id === "ecosystem") {
+        window.scrollTo({ top: ecosystemHubScrollY(), behavior: "smooth" });
+      } else {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+      finish();
     }
     return true;
   }
-  function resetScroll(data) {
+    function resetScroll(data) {
     if (window.location.hash !== "") {
-      if ($(window.location.hash).length >= 1) {
-        setTimeout(() => scrollToPageSection(window.location.hash), 80);
+            if ($(window.location.hash).length >= 1) {
+                setTimeout(() => {
+          if (window.location.hash === "#ecosystem") {
+            scrollToEcosystemHub();
+            } else {
+            scrollToPageSection(window.location.hash);
+          }
+        }, 80);
       } else {
         scrollTop();
       }
@@ -275,54 +349,54 @@ const script = () => {
             .replace(/=/g, '":"') +
           '"}',
       );
-      if (searchObj.sc) {
-        if ($(`#${searchObj.sc}`).length >= 1) {
-          let target = `#${searchObj.sc}`;
-          setTimeout(() => {
-            smoothScroll.lenis.scrollTo(`#${searchObj.sc}`, {
+            if (searchObj.sc) {
+                if ($(`#${searchObj.sc}`).length >= 1) {
+                    let target = `#${searchObj.sc}`;
+                    setTimeout(() => {
+                        smoothScroll.lenis.scrollTo(`#${searchObj.sc}`, {
               offset: -100,
             });
-          }, 500);
+                    }, 500);
           barba.history.add(
             `${window.location.pathname + target}`,
             "barba",
             "replace",
           );
-        } else {
+                } else {
           scrollTop();
-        }
-      }
-    } else {
+                }
+            }
+        } else {
       scrollTop();
+        }
     }
-  }
-  function scrollTop(onComplete) {
+    function scrollTop(onComplete) {
     if ("scrollRestoration" in history) {
       history.scrollRestoration = "manual";
-    }
-    window.scrollTo(0, 0);
-    smoothScroll.lenis.scrollTo("top", {
+        }
+        window.scrollTo(0, 0);
+        smoothScroll.lenis.scrollTo("top", {
       duration: 0.0001,
       lock: true,
-      onComplete: () => {
-        onComplete?.();
-        getAllScrollTrigger("refresh");
+            onComplete: () => {
+                onComplete?.();
+                getAllScrollTrigger("refresh");
       },
-    });
-  }
-  const formSubmitEvent = (function () {
+        });
+    }
+    const formSubmitEvent = (function () {
     const init = ({ onlyWorkOnThisFormName, onSuccess, onFail }) => {
       let inputSubmit = $(
         `#${getIDFormName(onlyWorkOnThisFormName)} .input-submit-wrap .txt`,
       );
 
       $(document).on("ajaxSend", function (event, xhr, settings) {
-        if (settings.url.includes("https://webflow.com/api/v1/form/")) {
+                if (settings.url.includes("https://webflow.com/api/v1/form/")) {
           inputSubmit.text("Please wait...");
-        }
-      });
+                }
+            });
       $(document).on("ajaxComplete", function (event, xhr, settings) {
-        if (settings.url.includes("https://webflow.com/api/v1/form/")) {
+                if (settings.url.includes("https://webflow.com/api/v1/form/")) {
           const isSuccessful = xhr.status === 200;
           const isWorkOnAllForm = onlyWorkOnThisFormName == undefined;
           const isCorrectForm =
@@ -331,108 +405,108 @@ const script = () => {
               getSanitizedFormName(onlyWorkOnThisFormName),
             );
 
-          if (isWorkOnAllForm) {
-            if (isSuccessful) {
+                    if (isWorkOnAllForm) {
+                        if (isSuccessful) {
               onSuccess?.();
               inputSubmit.text("Sent");
-            } else {
+                        } else {
               onFail?.();
-            }
-          } else if (isCorrectForm) {
-            if (isSuccessful) {
+                        }
+                    } else if (isCorrectForm) {
+                        if (isSuccessful) {
               onSuccess?.();
               inputSubmit.text("Sent");
-            } else {
+                        } else {
               onFail?.();
-            }
-          }
-        }
-      });
+                        }
+                    }
+                }
+            });
     };
-    function getIDFormName(name) {
-      return name.toLowerCase().replaceAll(" ", "-");
-    }
-    function getSanitizedFormName(name) {
+        function getIDFormName(name) {
+            return name.toLowerCase().replaceAll(" ", "-");
+        }
+        function getSanitizedFormName(name) {
       return name.replaceAll(" ", "+");
-    }
-    return {
+        }
+        return {
       init,
     };
-  })();
-  const GTMHandle = {
-    init() {
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({
+    })();
+    const GTMHandle = {
+        init() {
+            window.dataLayer = window.dataLayer || [];
+            window.dataLayer.push({
         event: "gtm.js",
         "gtm.start": new Date().getTime(),
-      });
-      this.pageView();
-    },
-    pageView() {
-      window.dataLayer.push({
+            });
+            this.pageView();
+        },
+        pageView() {
+            window.dataLayer.push({
         event: "pageview",
-        page_path: window.location.pathname + window.location.search,
-        page_title: document.title,
-        page_location: window.location.href,
+                page_path: window.location.pathname + window.location.search,
+                page_title: document.title,
+                page_location: window.location.href,
         page_hash: window.location.hash,
-      });
+            });
     },
   };
 
-  class Mouse {
-    constructor() {
+    class Mouse {
+        constructor() {
       this.mousePos = { x: 0, y: 0 };
       this.cacheMousePos = { ...this.mousePos };
       this.lastMousePos = { ...this.mousePos };
-      this.normalizeMousePos = {
+            this.normalizeMousePos = {
         current: { x: 0.5, y: 0.5 },
         target: { x: 0.5, y: 0.5 },
-      };
-      this.cursorRaf = null;
-      this.init();
+            };
+            this.cursorRaf = null;
+            this.init();
 
-      // Add mouse move event listener
+            // Add mouse move event listener
       window.addEventListener("mousemove", (e) => {
-        this.mousePos = this.getPointerPos(e);
-      });
+                this.mousePos = this.getPointerPos(e);
+            });
       window.addEventListener("touchmove", () => {
-        this.mousePos = this.getPointerPos(e);
-      });
-    }
+                this.mousePos = this.getPointerPos(e);
+            });
+        }
 
-    init() {
-      if (viewport.w > 991) {
-        requestAnimationFrame(this.update.bind(this));
-      }
-    }
+        init() {
+            if (viewport.w > 991) {
+                requestAnimationFrame(this.update.bind(this));
+            }
+        }
 
-    update() {
-      this.cacheMousePos.x = lerp(this.cacheMousePos.x, this.mousePos.x, 0.1);
-      this.cacheMousePos.y = lerp(this.cacheMousePos.y, this.mousePos.y, 0.1);
+        update() {
+            this.cacheMousePos.x = lerp(this.cacheMousePos.x, this.mousePos.x, 0.1);
+            this.cacheMousePos.y = lerp(this.cacheMousePos.y, this.mousePos.y, 0.1);
 
-      this.normalizeMousePos.target.x = this.mousePos.x / window.innerWidth;
-      this.normalizeMousePos.target.y = this.mousePos.y / window.innerHeight;
-      if (!this.cursorRaf) {
-        this.cursorRaf = requestAnimationFrame(this.lerpCursorPos.bind(this));
-      }
-      this.toggleCursor();
-      requestAnimationFrame(this.update.bind(this));
-    }
+            this.normalizeMousePos.target.x = this.mousePos.x / window.innerWidth;
+            this.normalizeMousePos.target.y = this.mousePos.y / window.innerHeight;
+            if (!this.cursorRaf) {
+                this.cursorRaf = requestAnimationFrame(this.lerpCursorPos.bind(this));
+            }
+            this.toggleCursor();
+            requestAnimationFrame(this.update.bind(this));
+        }
 
-    getPointerPos(ev) {
-      if (ev.touches) {
-        return {
-          x: ev.touches[0].clientX,
+        getPointerPos(ev) {
+            if (ev.touches) {
+                return {
+                    x: ev.touches[0].clientX,
           y: ev.touches[0].clientY,
-        };
-      }
-      return {
-        x: ev.clientX,
+                };
+            }
+            return {
+                x: ev.clientX,
         y: ev.clientY,
-      };
-    }
+            };
+        }
 
-    lerpCursorPos = () => {
+        lerpCursorPos = () => {
       this.normalizeMousePos.current.x = lerp(
         this.normalizeMousePos.current.x,
         this.normalizeMousePos.target.x,
@@ -444,147 +518,147 @@ const script = () => {
         0.1,
       );
 
-      const delta = distance(
-        this.normalizeMousePos.target.x,
-        this.normalizeMousePos.current.x,
-        this.normalizeMousePos.target.y,
+            const delta = distance(
+                this.normalizeMousePos.target.x,
+                this.normalizeMousePos.current.x,
+                this.normalizeMousePos.target.y,
         this.normalizeMousePos.current.y,
-      );
+            );
 
-      if (delta < 0.001 && this.cursorRaf) {
-        cancelAnimationFrame(this.cursorRaf);
-        this.cursorRaf = null;
-        this.resetCursor();
-        return;
+            if (delta < 0.001 && this.cursorRaf) {
+                cancelAnimationFrame(this.cursorRaf);
+                this.cursorRaf = null;
+                this.resetCursor();
+                return;
       } else {
-        this.cursorRaf = requestAnimationFrame(this.lerpCursorPos.bind(this));
-        this.toggleCursor();
-      }
+                this.cursorRaf = requestAnimationFrame(this.lerpCursorPos.bind(this));
+                this.toggleCursor();
+            }
     };
 
-    reachedThreshold(threshold) {
-      if (!threshold) return false;
+        reachedThreshold(threshold) {
+            if (!threshold) return false;
       const dist = distance(
         this.mousePos.x,
         this.mousePos.y,
         this.lastMousePos.x,
         this.lastMousePos.y,
       );
-      if (dist > threshold) {
-        this.lastMousePos = { ...this.mousePos };
-        return true;
-      }
-      return false;
-    }
-    toggleCursor() {
+            if (dist > threshold) {
+                this.lastMousePos = { ...this.mousePos };
+                return true;
+            }
+            return false;
+        }
+        toggleCursor() {
       const hoverElements = $("[data-cursor]:hover");
       const cursor = $(".cursor-main");
 
-      if (hoverElements.length) {
-        xSetter(cursor)(this.normalizeMousePos.current.x * window.innerWidth);
-        ySetter(cursor)(this.normalizeMousePos.current.y * window.innerHeight);
+            if (hoverElements.length) {
+                xSetter(cursor)(this.normalizeMousePos.current.x * window.innerWidth);
+                ySetter(cursor)(this.normalizeMousePos.current.y * window.innerHeight);
 
-        // Get the last hovered element's cursor type (topmost element)
+                // Get the last hovered element's cursor type (topmost element)
         const type = $(hoverElements[hoverElements.length - 1]).attr(
           "data-cursor",
         );
-        switch (type) {
+                switch (type) {
           case "drag":
-            // Add drag cursor styling
+                        // Add drag cursor styling
             cursor.removeClass("hidden");
             $(".cursor-drag").addClass("active");
-            break;
+                        break;
           case "hidden":
             cursor.addClass("hidden");
-            break;
-          default:
-            // Reset cursor to default
+                        break;
+                    default:
+                        // Reset cursor to default
             cursor.removeClass("hidden");
             $(".cursor-drag").removeClass("active");
-            break;
-        }
+                        break;
+                }
       } else {
-        this.resetCursor();
-      }
-    }
-
-    resetCursor() {
-      // Reset cursor styles
-      $(".cursor-drag").removeClass("active");
-    }
-  }
-  const mouse = new Mouse();
-
-  class SmoothScroll {
-    constructor() {
-      this.lenis = null;
-      this.scroller = {
-        scrollX: window.scrollX,
-        scrollY: window.scrollY,
-        velocity: 0,
-        direction: 0,
-      };
-
-      this.lastScroller = {
-        scrollX: window.scrollX,
-        scrollY: window.scrollY,
-        velocity: 0,
-        direction: 0,
-      };
-    }
-    init(data) {
-      this.reInit(data);
-      gsap.ticker.add((time) => {
-        if (this.lenis) {
-          this.lenis.raf(time * 1000);
+                this.resetCursor();
+            }
         }
-      });
-      gsap.ticker.lagSmoothing(0);
+
+        resetCursor() {
+            // Reset cursor styles
+      $(".cursor-drag").removeClass("active");
+        }
     }
-    reInit(data) {
+    const mouse = new Mouse();
+
+    class SmoothScroll {
+        constructor() {
+            this.lenis = null;
+            this.scroller = {
+                scrollX: window.scrollX,
+                scrollY: window.scrollY,
+                velocity: 0,
+        direction: 0,
+      };
+
+            this.lastScroller = {
+                scrollX: window.scrollX,
+                scrollY: window.scrollY,
+                velocity: 0,
+        direction: 0,
+      };
+        }
+        init(data) {
+            this.reInit(data);
+            gsap.ticker.add((time) => {
+                if (this.lenis) {
+                    this.lenis.raf(time * 1000);
+                }
+            });
+            gsap.ticker.lagSmoothing(0);
+        }
+        reInit(data) {
       let namespace = data
         ? data.next.namespace
         : $('[data-barba="container"]').attr("data-barba-namespace");
-      this.lenis = new Lenis({
-        content:
+            this.lenis = new Lenis({
+                content:
           viewport.w > 767
             ? document.documentElement
             : document.querySelector(".main"),
-        wrapper:
+                wrapper:
           viewport.w > 767
             ? document.documentElement
             : document.querySelector(".body-inner"),
-        smoothTouch: false,
-        infinite: false,
+                smoothTouch: false,
+                infinite: false,
       });
       this.lenis.on("scroll", ScrollTrigger.update);
 
       this.lenis.on("scroll", (e) => {
-        this.updateOnScroll(e);
-      });
-    }
-    toggleInfinite() {
+                this.updateOnScroll(e);
+            });
+        }
+        toggleInfinite() {
       if (this.lenis) {
         this.lenis.options.infinite = false;
-      }
-    }
-    start() {
-      this.lenis.start();
+            }
+        }
+        start() {
+            this.lenis.start();
       $(".body").css("overflow", "initial");
-    }
-    stop() {
-      this.lenis.stop();
+        }
+        stop() {
+            this.lenis.stop();
       $(".body").css("overflow", "hidden");
-    }
-    destroy() {
-      gsap.ticker.remove((time) => {
-        this.lenis.raf(time * 1000);
-      });
-      this.lenis.destroy();
-      this.lenis = null;
-    }
-    reachedThreshold(threshold) {
-      if (!threshold) return false;
+        }
+        destroy() {
+            gsap.ticker.remove((time) => {
+                this.lenis.raf(time * 1000);
+            });
+            this.lenis.destroy();
+            this.lenis = null;
+        }
+        reachedThreshold(threshold) {
+            if (!threshold) return false;
       const dist = distance(
         this.scroller.scrollX,
         this.scroller.scrollY,
@@ -592,32 +666,32 @@ const script = () => {
         this.lastScroller.scrollY,
       );
 
-      if (dist > threshold) {
+            if (dist > threshold) {
         this.lastScroller = { ...this.scroller };
-        return true;
-      }
-    }
-    updateOnScroll = (e) => {
+                return true;
+            }
+        }
+        updateOnScroll = (e) => {
       this.scroller.scrollX = e.scroll;
       this.scroller.scrollY = e.scroll;
 
       this.scroller.velocity = e.velocity * 0.2;
-      this.scroller.direction = e.direction;
-      if (header) {
-        header.updateOnScroll(smoothScroll.lenis);
+            this.scroller.direction = e.direction;
+            if (header) {
+                header.updateOnScroll(smoothScroll.lenis);
       }
-    };
-  }
-  const smoothScroll = new SmoothScroll();
+            };
+    }
+    const smoothScroll = new SmoothScroll();
 
-  class Loader {
-    constructor() {
+    class Loader {
+        constructor() {
       this.isLoaded =
         sessionStorage.getItem("isLoaded") === "true" ? true : false;
-      this.tlLoadDone = null;
-      this.tlLoadMaster = null;
-    }
-    init(data) {
+            this.tlLoadDone = null;
+            this.tlLoadMaster = null;
+        }
+        init(data) {
       const $loader = $(".loader");
       const $count = $(".loader-count-num");
       const $fill = $(".loader-fill");
@@ -629,8 +703,8 @@ const script = () => {
       ).matches;
       const isHome = data.next.namespace === "home";
 
-      this.tlLoading = gsap.timeline({
-        paused: true,
+            this.tlLoading = gsap.timeline({
+                    paused: true,
       });
 
       if ($loader.length) {
@@ -658,7 +732,7 @@ const script = () => {
         gsap.set($mark, { autoAlpha: 0, scale: 0.85 });
         gsap.set($loader, { clipPath: "circle(150% at 50% 46%)" });
 
-        this.tlLoading
+                this.tlLoading
           .to($mark, {
             autoAlpha: 1,
             scale: 1,
@@ -717,15 +791,15 @@ const script = () => {
             { autoAlpha: 0, duration: 0.4, ease: "power2.out" },
             "+=0.15",
           );
-      }
+            }
 
-      this.tlLoadMaster = gsap.timeline({
-        paused: true,
-        onStart: () => {
-          this.onceSetup(data);
-        },
-        onComplete: () => {
-          this.oncePlay(data);
+            this.tlLoadMaster = gsap.timeline({
+                paused: true,
+                onStart: () => {
+                    this.onceSetup(data);
+                },
+                onComplete: () => {
+                    this.oncePlay(data);
           $(".loader").remove();
         },
       });
@@ -734,129 +808,129 @@ const script = () => {
         progress: 1,
         ease: "none",
       });
-    }
-    play(data) {
-      // requestAnimationFrame(() => {
-      //     this.devMode(data);
-      // })
-      // return;
-      this.tlLoadMaster.play();
-    }
-    devMode(data) {
-      this.onceSetup(data);
-      this.oncePlay(data);
+        }
+        play(data) {
+            // requestAnimationFrame(() => {
+            //     this.devMode(data);
+            // })
+            // return;
+            this.tlLoadMaster.play();
+        }
+        devMode(data) {
+            this.onceSetup(data);
+            this.oncePlay(data);
       $(".loader").remove();
-    }
-    onceSetup(data) {
-      globalHooks.triggerOnceSetup(data);
-    }
-    oncePlay(data) {
+        }
+        onceSetup(data) {
+            globalHooks.triggerOnceSetup(data);
+        }
+        oncePlay(data) {
       if (this._didOncePlay) return;
       this._didOncePlay = true;
-      globalHooks.triggerOncePlay(data);
+            globalHooks.triggerOncePlay(data);
       $(".loader").css("pointer-events", "none");
       sessionStorage.setItem("isLoaded", true);
-      if (viewport.w > 767) {
+            if (viewport.w > 767) {
         $(".body").css({
           overflow: "initial",
           position: "relative",
           "max-height": "none",
           inset: "auto",
         });
-      }
+            }
+        }
     }
-  }
-  const loader = new Loader();
+    const loader = new Loader();
 
-  class Marquee {
-    constructor(list, duration = 40) {
-      this.list = list;
-      this.duration = duration;
-    }
-    setup(isReverse) {
-      const cloneAmount = Math.ceil(viewport.w / this.list.width()) + 1;
-      let itemClone = this.list.find('[data-marquee="item"]').clone();
-      let itemWidth = this.list.find('[data-marquee="item"]').width();
+    class Marquee {
+        constructor(list, duration = 40) {
+            this.list = list;
+            this.duration = duration;
+        }
+        setup(isReverse) {
+            const cloneAmount = Math.ceil(viewport.w / this.list.width()) + 1;
+            let itemClone = this.list.find('[data-marquee="item"]').clone();
+            let itemWidth = this.list.find('[data-marquee="item"]').width();
       this.list.html("");
-      new Array(cloneAmount).fill().forEach(() => {
+            new Array(cloneAmount).fill().forEach(() => {
         let html = itemClone.clone();
         html.css(
           "animation-duration",
           `${Math.ceil(itemWidth / this.duration)}s`,
         );
-        if (isReverse) {
+                if (isReverse) {
           html.css("animation-direction", "reverse");
-        }
+                }
         html.addClass("anim-marquee");
-        this.list.append(html);
-      });
+                this.list.append(html);
+            });
+        }
     }
-  }
 
-  class ParallaxImage {
+    class ParallaxImage {
     constructor({ el, scaleOffset = 0.3, direction = "vertical" }) {
-      this.el = el;
-      this.elWrap = null;
-      this.scaleOffset = scaleOffset;
-      this.direction = direction;
-      this.init();
-    }
-    init() {
-      this.elWrap = this.el.parentElement;
-      this.setup();
-    }
-    setup() {
+            this.el = el;
+            this.elWrap = null;
+            this.scaleOffset = scaleOffset;
+            this.direction = direction;
+            this.init();
+        }
+        init() {
+            this.elWrap = this.el.parentElement;
+            this.setup();
+        }
+        setup() {
       gsap.set(this.el, { height: "120%" });
-      this.scrub();
-    }
-    scrub() {
+            this.scrub();
+        }
+        scrub() {
       let dist =
         this.direction === "vertical"
-          ? this.el.offsetHeight - this.elWrap.offsetHeight
-          : this.el.offsetWidth - this.elWrap.offsetWidth;
+                ? this.el.offsetHeight - this.elWrap.offsetHeight
+                : this.el.offsetWidth - this.elWrap.offsetWidth;
 
       let total =
         this.direction === "vertical"
-          ? this.elWrap.getBoundingClientRect().height + window.innerHeight
-          : this.elWrap.getBoundingClientRect().width + window.innerWidth;
+                ? this.elWrap.getBoundingClientRect().height + window.innerHeight
+                : this.elWrap.getBoundingClientRect().width + window.innerWidth;
       this.updateOnScroll(dist, total);
       smoothScroll.lenis.on("scroll", () => {
-        this.updateOnScroll(dist, total);
-      });
-    }
-    updateOnScroll(dist, total) {
-      if (this.el && isInViewport(this.elWrap, this.direction)) {
+                this.updateOnScroll(dist, total);
+            });
+        }
+        updateOnScroll(dist, total) {
+            if (this.el && isInViewport(this.elWrap, this.direction)) {
         let percent =
           this.direction === "vertical"
-            ? this.elWrap.getBoundingClientRect().bottom / total
-            : this.elWrap.getBoundingClientRect().right / total;
+                    ? this.elWrap.getBoundingClientRect().bottom / total
+                    : this.elWrap.getBoundingClientRect().right / total;
 
         if (this.direction === "vertical") {
-          ySetter(this.el)(-dist * percent * 1.2);
-        } else {
-          xSetter(this.el)(-dist * percent * 1.2);
-        }
+                    ySetter(this.el)(-dist * percent * 1.2);
+                } else {
+                    xSetter(this.el)(-dist * percent * 1.2);
+                }
 
         gsap.set(this.el, { scale: 1 + percent * this.scaleOffset });
-      }
+            }
+        }
     }
-  }
-  class GlobalChange {
-    constructor() {
-      this.namespace = null;
-    }
-    init(data) {
-      this.namespace = data.next.namespace;
-      GTMHandle.init();
-      this.refreshOnBreakpoint();
-      this.updateLink(data);
-    }
-    update(data) {
-      this.updateLink(data);
-      header.update(data);
-    }
-    updateLink(data) {
-      $("a").each(function (index, link) {
+    class GlobalChange {
+        constructor() {
+            this.namespace = null;
+        }
+        init(data) {
+            this.namespace = data.next.namespace;
+            GTMHandle.init();
+            this.refreshOnBreakpoint();
+            this.updateLink(data);
+        }
+        update(data) {
+            this.updateLink(data);
+            header.update(data);
+        }
+        updateLink(data) {
+            $("a").each(function (index, link) {
         if (
           $(this).attr("data-sub-link") &&
           !$(this).attr("href").includes("#") &&
@@ -880,16 +954,16 @@ const script = () => {
           $(this).attr("href") ==
             `${window.location.pathname}${window.location.hash}`,
         );
-        if (!anchor) {
-          return;
+                if (!anchor) {
+                    return;
         } else {
           if (urlPath === `${window.location.pathname}` || urlPath === "") {
             $(this).attr("href", `${window.location.pathname}#${anchor}`);
           } else {
             $(this).attr("href", `${urlPath}?sc=${anchor}`);
-          }
-        }
-      });
+                    }
+                }
+            });
       $("a").on("click", function (e) {
         if ($(this).attr("data-sub-link")) {
           barba.history.add(
@@ -898,7 +972,7 @@ const script = () => {
             "replace",
           );
 
-          requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
             setTimeout(
               () => {
                 $(`#${$(this).attr("data-sub-link")}`).trigger("click");
@@ -906,7 +980,7 @@ const script = () => {
               $(this).hasClass("w--current") ? 0 : 1000,
             );
 
-            $("a").each(function (index, link) {
+                        $("a").each(function (index, link) {
               $(link).toggleClass(
                 "w--current",
                 $(link).attr("href") ==
@@ -916,9 +990,9 @@ const script = () => {
           });
         }
       });
-    }
-    refreshOnBreakpoint() {
-      const breakpoints = [479, 767, 991];
+        }
+        refreshOnBreakpoint() {
+            const breakpoints = [479, 767, 991];
       const initialViewportWidth =
         viewport.w || document.documentElement.clientWidth;
       const breakpoint =
@@ -935,58 +1009,58 @@ const script = () => {
             (initialViewportWidth >= breakpoint &&
               newViewportWidth < breakpoint)
           ) {
-            location.reload();
-          }
+                    location.reload();
+                }
         }),
       );
+        }
     }
-  }
-  const globalChange = new GlobalChange();
+    const globalChange = new GlobalChange();
 
-  class GlobalHooks {
+    class GlobalHooks {
     constructor() {}
-    triggerEvent(eventName, data) {
-      const event = new CustomEvent(eventName, { detail: data });
-      data.next.container.dispatchEvent(event);
-    }
-    triggerOnceSetup(data) {
+        triggerEvent(eventName, data) {
+            const event = new CustomEvent(eventName, { detail: data });
+            data.next.container.dispatchEvent(event);
+        }
+        triggerOnceSetup(data) {
       console.log("Global Hooks: onceSetup");
-      this.triggerEvent("onceSetup", data);
-    }
-    triggerOncePlay(data) {
+            this.triggerEvent("onceSetup", data);
+        }
+        triggerOncePlay(data) {
       console.log("Global Hooks: oncePlay");
-      this.triggerEvent("oncePlay", data);
+            this.triggerEvent("oncePlay", data);
       requestAnimationFrame(
         () => window.scrollY === 0 && window.scrollTo(0, 1),
       );
-    }
-    triggerEnterSetup(data) {
+        }
+        triggerEnterSetup(data) {
       console.log("Global Hooks: enterSetup");
-      this.triggerEvent("enterSetup", data);
+            this.triggerEvent("enterSetup", data);
       requestAnimationFrame(
         () => window.scrollY === 0 && window.scrollTo(0, 1),
       );
-    }
-    triggerEnterPlay(data) {
+        }
+        triggerEnterPlay(data) {
       console.log("Global Hooks: enterPlay");
-      this.triggerEvent("enterPlay", data);
+            this.triggerEvent("enterPlay", data);
+        }
     }
-  }
-  const globalHooks = new GlobalHooks();
+    const globalHooks = new GlobalHooks();
 
-  class PageTrans {
-    constructor() {
-      this.tlLeave = null;
-      this.tlEnter = null;
+    class PageTrans {
+        constructor() {
+            this.tlLeave = null;
+            this.tlEnter = null;
       this.el = document.querySelector(".trans");
-    }
-    leaveAnim(data) {
-      this.tlLeave = gsap.timeline({
-        onStart: () => {
-          this.updateBeforeTrans.bind(this)(data);
-        },
-        onComplete: () => {
-          this.updateAfterTrans.bind(this)(data);
+        }
+        leaveAnim(data) {
+            this.tlLeave = gsap.timeline({
+                onStart: () => {
+                    this.updateBeforeTrans.bind(this)(data);
+                },
+                onComplete: () => {
+                    this.updateAfterTrans.bind(this)(data);
         },
       });
       this.tlLeave.fromTo(
@@ -995,17 +1069,17 @@ const script = () => {
         { duration: 0.6, opacity: 0 },
       );
 
-      return this.tlLeave;
-    }
-    enterAnim(data) {
-      this.tlEnter = gsap.timeline({
+            return this.tlLeave;
+        }
+        enterAnim(data) {
+            this.tlEnter = gsap.timeline({
         delay: 0.5,
-        onStart: () => {
-          this.enterSetup(data);
-          setTimeout(() => {
-            this.enterPlay(data);
-          }, 100);
-        },
+                onStart: () => {
+                    this.enterSetup(data);
+                    setTimeout(() => {
+                        this.enterPlay(data);
+                    }, 100);
+                },
       });
 
       this.tlEnter.fromTo(
@@ -1014,151 +1088,159 @@ const script = () => {
         { duration: 0.6, opacity: 1, clearProps: "all" },
         0,
       );
-      return this.tlEnter;
-    }
-    async play(data) {
-      await pageTrans.leaveAnim(data).then(() => {
+            return this.tlEnter;
+        }
+        async play(data) {
+            await pageTrans.leaveAnim(data).then(() => {
         pageTrans.enterAnim(data);
       });
-    }
-    enterSetup(data) {
-      reinitializeWebflow(data);
-      globalHooks.triggerEnterSetup(data);
-    }
-    enterPlay(data) {
-      globalHooks.triggerEnterPlay(data);
-    }
-    updateBeforeTrans(data) {
+        }
+        enterSetup(data) {
+            reinitializeWebflow(data);
+            globalHooks.triggerEnterSetup(data);
+        }
+        enterPlay(data) {
+            globalHooks.triggerEnterPlay(data);
+        }
+        updateBeforeTrans(data) {
       gsap.set(data.next.container, {
         opacity: 0,
         "pointer-events": "none",
         zIndex: 1,
       });
-      smoothScroll.stop();
-      smoothScroll.destroy();
+            smoothScroll.stop();
+            smoothScroll.destroy();
       documentHeightObserver("disconnect");
-      if (data.current.container) {
+            if (data.current.container) {
         $(data.current.container).css("z-index", 2);
-      }
-    }
-    updateAfterTrans(data) {
+            }
+        }
+        updateAfterTrans(data) {
       smoothScroll.reInit(data);
-      scrollTop();
-      resetScroll();
-      smoothScroll.start();
-      globalChange.update(data);
+            scrollTop();
+            resetScroll();
+            smoothScroll.start();
+            globalChange.update(data);
 
       documentHeightObserver("init", data);
-      window.FinsweetAttributes.modules.list.restart();
-      if (data.current.container) {
-        data.current.container.remove();
-      }
-      GTMHandle.pageView();
+            window.FinsweetAttributes.modules.list.restart();
+            if (data.current.container) {
+                data.current.container.remove();
+            }
+            GTMHandle.pageView();
+        }
     }
-  }
-  const pageTrans = new PageTrans();
+    const pageTrans = new PageTrans();
 
-  class TriggerSetup {
-    constructor() {
-      this.tlTrigger = null;
-      this.once = true;
-    }
-    setTrigger(triggerEl, onTrigger) {
-      this.tlTrigger = gsap.timeline({
-        scrollTrigger: {
-          trigger: triggerEl,
+    class TriggerSetup {
+        constructor() {
+            this.tlTrigger = null;
+            this.once = true;
+        }
+        setTrigger(triggerEl, onTrigger) {
+            this.tlTrigger = gsap.timeline({
+                scrollTrigger: {
+                    trigger: triggerEl,
           start: "clamp(top bottom+=50%)",
           end: "bottom top-=50%",
-          onEnter: () => {
-            if (this.once) {
-              this.once = false;
-              this.onTrigger();
-            }
-          },
-          onEnterBack: () => {
-            if (this.once) {
-              this.once = false;
-              onTrigger();
-            }
-          },
+                    onEnter: () => {
+                        if (this.once) {
+                            this.once = false;
+                            this.onTrigger();
+                        }
+                    },
+                    onEnterBack: () => {
+                        if (this.once) {
+                            this.once = false;
+                            onTrigger();
+                        }
+                    },
         },
       });
+        }
+        cleanTrigger() {
+            if (this.isPlayed) {
+                this.isPlayed = false;
+            }
+            if (!this.once) {
+                this.once = true;
+            }
+            if (this.tlTrigger) {
+                this.tlTrigger.kill();
+                this.tlTrigger = null;
+            }
+        }
     }
-    cleanTrigger() {
-      if (this.isPlayed) {
-        this.isPlayed = false;
-      }
-      if (!this.once) {
-        this.once = true;
-      }
-      if (this.tlTrigger) {
-        this.tlTrigger.kill();
-        this.tlTrigger = null;
-      }
-    }
-  }
-  class Header {
-    constructor() {
-      this.el = null;
-      this.isOpen = false;
+    class Header {
+        constructor() {
+            this.el = null;
+            this.isOpen = false;
       this.tlNav = null;
-    }
-    init(data) {
+        }
+        init(data) {
       this.el = document.querySelector(".header");
       this.bindSectionLinks();
-      if (viewport.w <= 991) {
-        this.toggleNav();
-      }
-    }
+            if (viewport.w <= 991) {
+                this.toggleNav();
+            }
+        }
     bindSectionLinks() {
-      $(document)
-        .off("click.sectionNav")
-        .on("click.sectionNav", 'a[href*="#"]', (e) => {
-          const href = $(e.currentTarget).attr("href") || "";
-          if (
-            href.startsWith("http") &&
-            !href.startsWith(window.location.origin)
-          )
-            return;
-          const hash = `#${href.split("#")[1] || ""}`.replace(/[?].*$/, "");
-          if (hash.length < 2) return;
-          const target = document.querySelector(hash);
-          if (!target) return;
-          e.preventDefault();
-          e.stopPropagation();
-          const go = () => {
-            hideMobileHeader();
-            scrollToPageSection(target);
-            history.replaceState(null, "", hash);
-          };
-          if (this.isOpen) {
-            this.close();
-            requestAnimationFrame(() => requestAnimationFrame(go));
+      const onSectionClick = (e) => {
+        const link = e.target.closest?.("a[href*='#']");
+        if (!link) return;
+        const href = link.getAttribute("href") || "";
+        if (href.startsWith("http") && !href.startsWith(window.location.origin))
+          return;
+        const hash = `#${href.split("#")[1] || ""}`.replace(/[?].*$/, "");
+        if (hash.length < 2) return;
+        const target = document.querySelector(hash);
+        if (!target) return;
+        e.preventDefault();
+        e.stopPropagation();
+        if (typeof e.stopImmediatePropagation === "function") {
+          e.stopImmediatePropagation();
+        }
+        const go = () => {
+          hideMobileHeader();
+          if (hash === "#ecosystem") {
+            scrollToEcosystemHub();
           } else {
-            go();
+            scrollToPageSection(target);
           }
-        });
+          history.replaceState(null, "", hash);
+        };
+        if (this.isOpen) {
+          this.close();
+          requestAnimationFrame(() => requestAnimationFrame(go));
+        } else {
+          go();
+        }
+      };
+      document.removeEventListener("click", this._onSectionClick, true);
+      this._onSectionClick = onSectionClick;
+      document.addEventListener("click", this._onSectionClick, true);
+      $(document).off("click.sectionNav");
     }
-    update(data) {
-      this.updateMode(data);
-    }
-    updateOnScroll(inst) {
-      this.toggleHide(inst);
-      this.toggleScroll(inst);
-    }
-    toggleScroll(inst) {
-      if (inst.scroll > $(this.el).height() * 1) {
-        $(this.el).addClass("on-scroll");
+        update(data) {
+            this.updateMode(data);
+        }
+        updateOnScroll(inst) {
+            this.toggleHide(inst);
+            this.toggleScroll(inst);
+        }
+        toggleScroll(inst) {
+            if (inst.scroll > $(this.el).height() * 1) {
+                $(this.el).addClass("on-scroll");
       } else {
-        $(this.el).removeClass("on-scroll");
+                $(this.el).removeClass("on-scroll");
       }
-    }
-    toggleHide(inst) {
+        }
+        toggleHide(inst) {
       sollusHeaderHide.apply(
         Number.isFinite(inst?.scroll) ? inst.scroll : sollusHeaderHide.readY(),
       );
-    }
-    toggleNav() {
+        }
+        toggleNav() {
       $(this.el)
         .find(".header-ham")
         .off("click.kudanilNav")
@@ -1171,34 +1253,34 @@ const script = () => {
         .off("click.kudanilNavOutside")
         .on("click.kudanilNavOutside", (e) => {
           if (!$(e.target).closest(".header-ham, .mobile-nav").length) {
-            this.close();
+                        this.close();
           }
         });
-    }
-    handleClick(e) {
-      e.preventDefault();
+        }
+        handleClick(e) {
+            e.preventDefault();
       e.stopPropagation();
-      this.isOpen ? this.close() : this.open();
-    }
-    open() {
-      if (this.isOpen) return;
+            this.isOpen ? this.close() : this.open();
+        }
+        open() {
+            if (this.isOpen) return;
       $(this.el).removeClass("on-hide");
       $(".header").addClass("on-open-nav");
       $(".header-ham").addClass("active").attr("aria-expanded", "true");
       $(".header-ham").attr("aria-label", "Close menu");
       $(".mobile-nav").attr("aria-hidden", "false");
-      this.isOpen = true;
+            this.isOpen = true;
       if (viewport.w > 991) return;
       if (smoothScroll.lenis) smoothScroll.lenis.stop();
       this.playMobileNav();
-    }
-    close() {
-      if (!this.isOpen) return;
+        }
+        close() {
+            if (!this.isOpen) return;
       $(".header").removeClass("on-open-nav");
       $(".header-ham").removeClass("active").attr("aria-expanded", "false");
       $(".header-ham").attr("aria-label", "Open menu");
       $(".mobile-nav").attr("aria-hidden", "true");
-      this.isOpen = false;
+            this.isOpen = false;
       if (this.tlNav) {
         this.tlNav.kill();
         this.tlNav = null;
@@ -1226,44 +1308,44 @@ const script = () => {
         delay: 0.16,
         ease: "power3.out",
       });
-    }
-    updateMode(data) {
+        }
+        updateMode(data) {
       $(this.el).removeClass("on-light on-dark on-mix");
       $(this.el).addClass(
         `on-${$(data.next.container).attr("data-header") || "light"}`,
       );
+        }
     }
-  }
-  const header = new Header();
-  class Footer extends TriggerSetup {
-    constructor() {
-      super();
-      this.el = null;
-      this.tlOverlap = null;
-    }
-    trigger(data) {
+    const header = new Header();
+    class Footer extends TriggerSetup {
+        constructor() {
+            super();
+            this.el = null;
+            this.tlOverlap = null;
+        }
+        trigger(data) {
       this.el = data.next.container.querySelector(".footer");
       if (!this.el) return;
-      super.setTrigger(this.el, this.onTrigger.bind(this));
-    }
-    onTrigger() {
-      this.animationReveal();
-      this.animationScrub();
-      this.interact();
-    }
+            super.setTrigger(this.el, this.onTrigger.bind(this));
+        }
+        onTrigger() {
+            this.animationReveal();
+            this.animationScrub();
+            this.interact();
+        }
     animationReveal() {}
-    animationScrub() {
+        animationScrub() {
       switch ($(this.el).attr("data-wf--footer--variant")) {
         case "overlap":
-          if (viewport.w <= 767) return;
-          this.tlOverlap = gsap.timeline({
-            scrollTrigger: {
-              trigger: this.el,
+                    if (viewport.w <= 767) return;
+                    this.tlOverlap = gsap.timeline({
+                        scrollTrigger: {
+                            trigger: this.el,
               start: "top top",
-              end: `bottom bottom`,
-              scrub: 1,
-              onToggle: (self) => {
-                if (self.isActive) {
+                            end: `bottom bottom`,
+                            scrub: 1,
+                            onToggle: (self) => {
+                                if (self.isActive) {
                   gsap.set($(this.el).parent(), { backgroundColor: "#003357" });
                 } else {
                   gsap.set($(this.el).parent(), { clearProps: "all" });
@@ -1272,7 +1354,7 @@ const script = () => {
             },
           });
           gsap.set($(this.el), { "mask-size": "0% 0%" });
-          this.tlOverlap
+                    this.tlOverlap
             .fromTo(
               $(this.el),
               { "mask-size": "0% 0%" },
@@ -1303,18 +1385,18 @@ const script = () => {
               { autoAlpha: 1, y: 0 },
               "<=0.2",
             );
-          break;
+                    break;
         case "loop":
-          if (viewport.w <= 991) return;
-          this.tlOverlap = gsap.timeline({
-            scrollTrigger: {
-              trigger: this.el,
+                    if (viewport.w <= 991) return;
+                    this.tlOverlap = gsap.timeline({
+                        scrollTrigger: {
+                            trigger: this.el,
               start: `bottom-=${viewport.h * 0.5} bottom`,
-              end: `bottom+=${viewport.h} bottom`,
+                            end: `bottom+=${viewport.h} bottom`,
               scrub: 1,
             },
           });
-          this.tlOverlap
+                    this.tlOverlap
             .fromTo(
               $(this.el).find(".footer-loop-bg"),
               { autoAlpha: 0 },
@@ -1325,13 +1407,13 @@ const script = () => {
               { autoAlpha: 1, y: 0, scale: 1 },
               { autoAlpha: 0, y: 50, scale: 1.03 },
             );
-          break;
+                    break;
         default:
           break;
-      }
-    }
-    interact() {
-      new Marquee($(this.el).find('[data-marquee="list"]'), 40).setup();
+            }
+        }
+        interact() {
+            new Marquee($(this.el).find('[data-marquee="list"]'), 40).setup();
       $(this.el)
         .find(".footer-marquee-item")
         .on("click", (e) => {
@@ -1342,42 +1424,42 @@ const script = () => {
           $(this.el)
             .find(".footer-zoom-txt .txt")
             .text($(e.target).find(".txt").text());
-          smoothScroll.lenis.stop();
+                smoothScroll.lenis.stop();
         });
       $(this.el)
         .find(".footer-zoom-close")
         .on("click", () => {
           $(this.el).find(".footer-zoom").removeClass("active");
-          smoothScroll.lenis.start();
+                smoothScroll.lenis.start();
         });
+        }
+        destroy() {
+            if (this.tlOverlap) {
+                this.tlOverlap.kill();
+            }
+        }
     }
-    destroy() {
-      if (this.tlOverlap) {
-        this.tlOverlap.kill();
-      }
-    }
-  }
 
-  const HomePage = {
-    Hero: class {
-      constructor() {
-        this.el = null;
-        this.tlOnce = null;
-        this.tlEnter = null;
-        this.tlTriggerEnter = null;
-        this.tlOverlap = null;
-      }
-      setup(data, mode) {
+    const HomePage = {
+        Hero: class {
+            constructor() {
+                this.el = null;
+                this.tlOnce = null;
+                this.tlEnter = null;
+                this.tlTriggerEnter = null;
+                this.tlOverlap = null;
+            }
+            setup(data, mode) {
         this.el = data.next.container.querySelector(".home-hero-wrap");
         if (mode === "once") {
-          this.setupOnce(data);
+                    this.setupOnce(data);
         } else if (mode === "enter") {
-          this.setupEnter(data);
+                    this.setupEnter(data);
         } else return;
 
-        this.animationScrub();
-      }
-      setupOnce(data) {
+                this.animationScrub();
+            }
+            setupOnce(data) {
         const $hero = $(this.el);
         const img = $hero.find(".home-hero-bg-item-inner img").get(0);
         const title = $hero.find(".home-hero-title .heading").get(0);
@@ -1390,8 +1472,8 @@ const script = () => {
           "(prefers-reduced-motion: reduce)",
         ).matches;
 
-        this.tlOnce = gsap.timeline({
-          paused: true,
+                this.tlOnce = gsap.timeline({
+                    paused: true,
           onStart: () => $("[data-init-hidden]").removeAttr("data-init-hidden"),
         });
 
@@ -1481,41 +1563,41 @@ const script = () => {
             0.08,
           );
         }
-      }
-      setupEnter(data) {
-        this.tlEnter = gsap.timeline({
-          paused: true,
+            }
+            setupEnter(data) {
+                this.tlEnter = gsap.timeline({
+                    paused: true,
           onStart: () => $("[data-init-hidden]").removeAttr("data-init-hidden"),
         });
 
-        this.tlTriggerEnter = gsap.timeline({
-          scrollTrigger: {
-            trigger: this.el,
+                this.tlTriggerEnter = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: this.el,
             start: "top bottom+=50%",
             end: "bottom top-=50%",
-            once: true,
-            onEnter: () => this.tlEnter.play(),
-            onEnterBack: () => this.tlEnter.play(),
+                        once: true,
+                        onEnter: () => this.tlEnter.play(),
+                        onEnterBack: () => this.tlEnter.play(),
             onStart: () =>
               $("[data-init-hidden]").removeAttr("data-init-hidden"),
           },
         });
 
-        // this.animationReveal(this.tlEnter);
-      }
-      playOnce() {
+                // this.animationReveal(this.tlEnter);
+            }
+            playOnce() {
         if (this.tlOnce) this.tlOnce.play();
-      }
-      playEnter() {
-        // if (isInViewport(this.el)) {
-        //     this.tlEnter.play();
-        // }
-      }
+            }
+            playEnter() {
+                // if (isInViewport(this.el)) {
+                //     this.tlEnter.play();
+                // }
+            }
       animationReveal(timeline) {}
-      animationScrub() {
-        this.tlOverlap = gsap.timeline({
-          scrollTrigger: {
-            trigger: this.el,
+            animationScrub() {
+                this.tlOverlap = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: this.el,
             start: "top top",
             end: "bottom 85%",
             scrub: true,
@@ -1524,7 +1606,7 @@ const script = () => {
         gsap.set($(this.el).select(".home-hero-backdrop"), {
           backdropFilter: "blur(0px)",
         });
-        this.tlOverlap
+                this.tlOverlap
           .fromTo(
             $(this.el).select(".home-hero-backdrop"),
             { backdropFilter: "blur(0px)" },
@@ -1542,52 +1624,52 @@ const script = () => {
             { autoAlpha: 0, y: -cvUnit(5, "rem"), scale: 0.96 },
             "<=.2",
           );
-      }
-      destroy() {
+            }
+            destroy() {
         if (this.splitTitle?.revert) this.splitTitle.revert();
         if (this.splitDesc?.revert) this.splitDesc.revert();
-        if (this.tlOnce) {
-          this.tlOnce.kill();
-        }
-        if (this.tlEnter) {
-          this.tlEnter.kill();
-        }
-        if (this.tlTriggerEnter) {
-          this.tlTriggerEnter.kill();
-        }
-        if (this.tlOverlap) {
-          this.tlOverlap.kill();
-        }
-      }
-    },
-    HeroClone: class extends TriggerSetup {
-      constructor() {
-        super();
-        this.el = null;
-        this.tlLoop = null;
-      }
-      trigger(data) {
+                if (this.tlOnce) {
+                    this.tlOnce.kill();
+                }
+                if (this.tlEnter) {
+                    this.tlEnter.kill();
+                }
+                if (this.tlTriggerEnter) {
+                    this.tlTriggerEnter.kill();
+                }
+                if (this.tlOverlap) {
+                    this.tlOverlap.kill();
+                }
+            }
+        },
+        HeroClone: class extends TriggerSetup {
+            constructor() {
+                super();
+                this.el = null;
+                this.tlLoop = null;
+            }
+            trigger(data) {
         this.el = data.next.container.querySelector(".home-hero-clone-wrap");
         if (!this.el) return;
-        super.setTrigger(this.el, this.onTrigger.bind(this));
-      }
-      onTrigger() {
-        this.animationScrub();
-        this.interact();
-      }
+                super.setTrigger(this.el, this.onTrigger.bind(this));
+            }
+            onTrigger() {
+                this.animationScrub();
+                this.interact();
+            }
       animationReveal() {}
-      animationScrub() {
-        if (viewport.w <= 991) return;
-        this.tlOverlap = gsap.timeline({
-          scrollTrigger: {
-            trigger: this.el,
-            start: `top bottom`,
+            animationScrub() {
+                if (viewport.w <= 991) return;
+                this.tlOverlap = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: this.el,
+                        start: `top bottom`,
             end: "bottom bottom",
             scrub: true,
           },
         });
 
-        this.tlOverlap
+                this.tlOverlap
           .fromTo(
             $(this.el).select(".home-hero-clone-bg"),
             { scale: 1.1, transformOrigin: "top" },
@@ -1601,45 +1683,45 @@ const script = () => {
           );
       }
       interact() {}
-      destroy() {
-        if (this.tlOverlap) {
-          this.tlOverlap.kill();
-        }
-      }
-    },
-    Gallery: class extends TriggerSetup {
-      constructor() {
-        super();
-        this.el = null;
-        this.tlOverlap = null;
-        this.tlChangeBG = null;
-        this.tlShowText = null;
-      }
-      trigger(data) {
+            destroy() {
+                if (this.tlOverlap) {
+                    this.tlOverlap.kill();
+                }
+            }
+        },
+        Gallery: class extends TriggerSetup {
+            constructor() {
+                super();
+                this.el = null;
+                this.tlOverlap = null;
+                this.tlChangeBG = null;
+                this.tlShowText = null;
+            }
+            trigger(data) {
         this.el = data.next.container.querySelector(".home-gallery-wrap");
         if (!this.el || this.el.hidden) return;
-        super.setTrigger(this.el, this.onTrigger.bind(this));
-      }
-      onTrigger() {
-        this.animationScrub();
-        this.animationReveal();
-        this.interact();
-      }
+                super.setTrigger(this.el, this.onTrigger.bind(this));
+            }
+            onTrigger() {
+                this.animationScrub();
+                this.animationReveal();
+                this.interact();
+            }
       animationReveal() {}
-      animationScrub() {
-        this.tlFlipCard = gsap.timeline({
-          scrollTrigger: {
+            animationScrub() {
+                this.tlFlipCard = gsap.timeline({
+                    scrollTrigger: {
             trigger: $(this.el).select(".home-gallery"),
             start: "top-=10px bottom",
             end: "top-=10px 50%",
-            scrub: true,
+                        scrub: true,
           },
         });
 
         $(this.el)
           .selectAll(".home-gallery-main.start .home-gallery-item")
           .each((idx, item) => {
-            let firstState = {
+                    let firstState = {
               x:
                 (idx + 1) % 2 === 0
                   ? gsap.utils.random(10, 20)
@@ -1650,7 +1732,7 @@ const script = () => {
                   ? gsap.utils.random(5, 10)
                   : gsap.utils.random(-10, -5),
             };
-            let midState = {
+                    let midState = {
               x:
                 $(this.el)
                   .selectAll(".home-gallery-main.end .home-gallery-item")
@@ -1667,9 +1749,9 @@ const script = () => {
               rotation: 0,
             };
 
-            gsap.set(item, { zIndex: idx, ...firstState });
+                    gsap.set(item, { zIndex: idx, ...firstState });
 
-            let randomY = gsap.utils.random(0, 20);
+                    let randomY = gsap.utils.random(0, 20);
             this.tlFlipCard.fromTo(
               item,
               { ...firstState },
@@ -1710,12 +1792,12 @@ const script = () => {
               );
           });
 
-        this.tlShowText = gsap.timeline({
-          scrollTrigger: {
-            trigger: $(this.el).prev(),
+                this.tlShowText = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: $(this.el).prev(),
             start: "bottom 85%",
             end: "bottom bottom+=100%",
-            endTrigger: this.el,
+                        endTrigger: this.el,
             scrub: true,
           },
         });
@@ -1727,7 +1809,7 @@ const script = () => {
               idx <
               $(this.el).selectAll(".home-gallery-text-item").length - 1
             ) {
-              this.tlShowText
+                        this.tlShowText
                 .fromTo(
                   item,
                   { autoAlpha: 0, y: cvUnit(3, "rem"), scale: 1.04 },
@@ -1740,23 +1822,23 @@ const script = () => {
                   { autoAlpha: 0, y: -cvUnit(3, "rem"), scale: 0.96 },
                   ">=.5",
                 );
-            } else {
+                    } else {
               this.tlShowText.fromTo(
                 item,
                 { autoAlpha: 0, y: cvUnit(3, "rem"), scale: 1.04 },
                 { autoAlpha: 1, y: 0, scale: 1 },
                 ">=0",
               );
-            }
-            gsap.set(item, { autoAlpha: 0 });
+                    }
+                    gsap.set(item, { autoAlpha: 0 });
           });
 
-        this.tlOverlap = gsap.timeline({
-          scrollTrigger: {
-            trigger: this.el,
-            start: `bottom-=${viewport.h * 1.5} 50%`,
-            end: `bottom-=${viewport.h * 1} 50%`,
-            scrub: true,
+                this.tlOverlap = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: this.el,
+                        start: `bottom-=${viewport.h * 1.5} 50%`,
+                        end: `bottom-=${viewport.h * 1} 50%`,
+                        scrub: true,
           },
         });
         this.tlOverlap.fromTo(
@@ -1764,8 +1846,8 @@ const script = () => {
           { autoAlpha: 1, scale: 1 },
           { autoAlpha: 0, scale: 0.96 },
         );
-      }
-      interact() {
+            }
+            interact() {
         $(this.el)
           .find(".home-gallery-item")
           .on("click", (e) => {
@@ -1778,50 +1860,50 @@ const script = () => {
             $(this.el)
               .find(".home-gallery-zoom-txt .txt")
               .text($(e.target).attr("data-content"));
-            smoothScroll.lenis.stop();
+                    smoothScroll.lenis.stop();
           });
         $(this.el)
           .find(".home-gallery-zoom-close")
           .on("click", () => {
             $(this.el).find(".home-gallery-zoom").removeClass("active");
             $(this.el).find(".home-gallery-stick").removeClass("on-zoom");
-            smoothScroll.lenis.start();
+                    smoothScroll.lenis.start();
           });
-      }
-      destroy() {
-        if (this.tlOverlap) {
-          this.tlOverlap.kill();
-        }
-        if (this.tlChangeBG) {
-          this.tlChangeBG.kill();
-        }
-        if (this.tlShowText) {
-          this.tlShowText.kill();
-        }
-      }
-    },
-    Map: class extends TriggerSetup {
-      constructor() {
-        super();
-        this.el = null;
-        this.tlOverlap = null;
-      }
-      trigger(data) {
+            }
+            destroy() {
+                if (this.tlOverlap) {
+                    this.tlOverlap.kill();
+                }
+                if (this.tlChangeBG) {
+                    this.tlChangeBG.kill();
+                }
+                if (this.tlShowText) {
+                    this.tlShowText.kill();
+                }
+            }
+        },
+        Map: class extends TriggerSetup {
+            constructor() {
+                super();
+                this.el = null;
+                this.tlOverlap = null;
+            }
+            trigger(data) {
         this.el = data.next.container.querySelector(".home-map-wrap");
         if (!this.el) return;
-        super.setTrigger(this.el, this.onTrigger.bind(this));
-      }
-      onTrigger() {
-        this.animationScrub();
-        this.animationReveal();
-        this.interact();
-      }
-      animationScrub() {
-        this.tlOverlap = gsap.timeline({
-          scrollTrigger: {
-            trigger: this.el,
+                super.setTrigger(this.el, this.onTrigger.bind(this));
+            }
+            onTrigger() {
+                this.animationScrub();
+                this.animationReveal();
+                this.interact();
+            }
+            animationScrub() {
+                this.tlOverlap = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: this.el,
             start: "top bottom",
-            end: `top top`,
+                        end: `top top`,
             scrub: true,
           },
         });
@@ -1831,13 +1913,13 @@ const script = () => {
           { autoAlpha: 0, scale: 1.4 },
           { autoAlpha: 1, scale: 1 },
         );
-      }
+            }
 
-      animationReveal() {
+            animationReveal() {
         $(".home-yacth-bg img").removeAttr("loading");
-      }
-      interact() {
-        const activeIndex = (idx) => {
+            }
+            interact() {
+                const activeIndex = (idx) => {
           $(this.el)
             .find(".home-map-destin-item")
             .eq(idx)
@@ -1852,11 +1934,11 @@ const script = () => {
             .removeClass("active");
         };
 
-        if (viewport.w > 991) {
+                if (viewport.w > 991) {
           $(this.el)
             .find(".home-map-destin-item, .home-map-location-item")
             .on("mouseenter", function (e) {
-              activeIndex($(this).index());
+                        activeIndex($(this).index());
             });
 
           $(this.el)
@@ -1866,13 +1948,13 @@ const script = () => {
               $(this.el).find(".home-map-location-item").removeClass("active");
             });
         } else {
-          // $(this.el).find('.home-map-destin-item, .home-map-location-item').on('click', function(e) {
-          //     activeIndex($(this).index());
-          // })
-        }
+                    // $(this.el).find('.home-map-destin-item, .home-map-location-item').on('click', function(e) {
+                    //     activeIndex($(this).index());
+                    // })
+                }
 
-        if (viewport.w <= 991) {
-          if (viewport.w <= 767) {
+                if (viewport.w <= 991) {
+                    if (viewport.w <= 767) {
             $(this.el)
               .find(".home-map-location-list")
               .prepend($(this.el).find(".home-map-location-item.full-map"));
@@ -1893,61 +1975,61 @@ const script = () => {
           let swiper = new Swiper($(this.el).select(".home-map-destin-cms"), {
             slidesPerView: "auto",
             spaceBetween: cvUnit(viewport.w > 767 ? 20 : 16, "rem"),
-            on: {
-              init: () => viewport.w <= 767 && activeIndex(0),
-              slideChange: (slide) => {
-                let index = slide.activeIndex;
-                viewport.w <= 767 && activeIndex(index);
+                        on: {
+                            init: () => viewport.w <= 767 && activeIndex(0),
+                            slideChange: (slide) => {
+                                let index = slide.activeIndex;
+                                viewport.w <= 767 && activeIndex(index);
               },
             },
           });
-        }
-      }
-      destroy() {
-        if (this.tlOverlap) {
-          this.tlOverlap.kill();
-        }
-      }
-    },
-    Yacth: class extends TriggerSetup {
-      constructor() {
-        super();
-        this.el = null;
-        this.tlOverlap = null;
-        this.tlForceScroll = null;
-        this.currentIndex = 0;
-        this.clicked = false;
-        this.raqID = [];
-        this.mouse = {
-          xMove: 0,
-          yMove: 0,
-          xCurr: 0,
+                }
+            }
+            destroy() {
+                if (this.tlOverlap) {
+                    this.tlOverlap.kill();
+                }
+            }
+        },
+        Yacth: class extends TriggerSetup {
+            constructor() {
+                super();
+                this.el = null;
+                this.tlOverlap = null;
+                this.tlForceScroll = null;
+                this.currentIndex = 0;
+                this.clicked = false;
+                this.raqID = [];
+                this.mouse = {
+                    xMove: 0,
+                    yMove: 0,
+                    xCurr: 0,
           yCurr: 0,
         };
-      }
-      trigger(data) {
+            }
+            trigger(data) {
         this.el = data.next.container.querySelector(".home-yacth-wrap");
-        super.setTrigger(this.el, this.onTrigger.bind(this));
-      }
-      onTrigger() {
-        this.interact();
-        this.animationScrub();
-        this.animationReveal();
-      }
-      animationScrub() {
+                super.setTrigger(this.el, this.onTrigger.bind(this));
+            }
+            onTrigger() {
+                this.interact();
+                this.animationScrub();
+                this.animationReveal();
+            }
+            animationScrub() {
         let progressToggle = viewport.w > 991 ? 0.2 : 0.5;
-        this.tlOverlap = gsap.timeline({
-          scrollTrigger: {
+                this.tlOverlap = gsap.timeline({
+                    scrollTrigger: {
             trigger: $(this.el).find(".home-yacth-main-slide"),
             start: "top top",
             end: "bottom top",
-            scrub: 1,
-            snap: [1],
-            onEnter: () => {
-              // $('.home-yacth-main-slide-text').eq(0).addClass('active');
-              // $('.home-yacth-main-slide-gallery').eq(0).addClass('active');
-            },
-            onUpdate: (self) => {
+                        scrub: 1,
+                        snap: [1],
+                        onEnter: () => {
+                            // $('.home-yacth-main-slide-text').eq(0).addClass('active');
+                            // $('.home-yacth-main-slide-gallery').eq(0).addClass('active');
+                        },
+                        onUpdate: (self) => {
               if (!self.isActive) return;
               const $root = $(this.el);
               if (self.progress < progressToggle) {
@@ -1964,10 +2046,10 @@ const script = () => {
                   .find(".home-yacth-main-slide-gallery")
                   .eq(0)
                   .addClass("active");
-              }
-            },
-            onToggle: (self) => {
-              if (self.isActive) {
+                            }
+                        },
+                        onToggle: (self) => {
+                            if (self.isActive) {
                 $(this.el)
                   .find(".home-yacth-main-bar-item")
                   .removeClass("active");
@@ -1975,7 +2057,7 @@ const script = () => {
                   .find(".home-yacth-main-slide-item")
                   .removeClass("active");
               } else {
-                if (self.progress === 0) {
+                                if (self.progress === 0) {
                   $(".home-yacth-main-slide-text").removeClass("active");
                   $(".home-yacth-main-slide-gallery").removeClass("active");
                 }
@@ -1988,7 +2070,7 @@ const script = () => {
           filter: "brightness(100%)",
           backdropFilter: "blur(0px)",
         });
-        this.tlOverlap
+                this.tlOverlap
           .fromTo(
             $(this.el).selectAll(".home-yacth-main-bar-item"),
             { autoAlpha: 0, xPercent: -10 },
@@ -2026,47 +2108,47 @@ const script = () => {
             "<=0",
           );
 
-        this.tlForceScroll = gsap.timeline({
-          scrollTrigger: {
+                this.tlForceScroll = gsap.timeline({
+                    scrollTrigger: {
             trigger: $(this.el).find(".home-yacth-main-slide"),
             start: "bottom top",
             end: "bottom bottom",
-            endTrigger: this.el,
+                        endTrigger: this.el,
             scrub: 1,
           },
         });
         $(this.el)
           .selectAll(".home-yacth-main-bar-item")
           .each((idx, el) => {
-            const fromAnimationConfig = {
-              scaleX: 1,
+                    const fromAnimationConfig = {
+                        scaleX: 1,
               ease: "none",
               duration: 0.8,
-              onReverseComplete: () => {
-                this.currentIndex = idx;
+                        onReverseComplete: () => {
+                            this.currentIndex = idx;
                 $(this.el)
                   .selectAll(".home-yacth-main-bar-item")
                   .each((idx, el) => {
-                    if (this.currentIndex <= idx) {
+                                if (this.currentIndex <= idx) {
                       $(el).removeClass("active");
-                    }
+                                }
                   });
-                if (this.currentIndex !== 0) {
-                  this.currentIndex = this.currentIndex - 1;
-                  this.updateSlideActive();
-                }
-              },
-              onStart: () => {
-                this.currentIndex = idx;
-                if (this.clicked) {
-                  setTimeout(() => {
+                            if (this.currentIndex !== 0) {
+                                this.currentIndex = this.currentIndex - 1;
+                                this.updateSlideActive();
+                            }
+                        },
+                        onStart: () => {
+                            this.currentIndex = idx;
+                            if (this.clicked) {
+                                setTimeout(() => {
                     $(el).addClass("active");
-                    this.updateSlideActive();
-                  }, 400);
+                                    this.updateSlideActive();
+                                }, 400);
                 } else {
                   $(el).addClass("active");
-                  this.updateSlideActive();
-                }
+                                this.updateSlideActive();
+                            }
               },
             };
             this.tlForceScroll.fromTo(
@@ -2075,12 +2157,12 @@ const script = () => {
               fromAnimationConfig,
             );
 
-            if (viewport.w > 767) {
+                    if (viewport.w > 767) {
               const rectTop =
                 $(this.el).find(".home-yacth-main-slide").offset().top +
                 viewport.h * (idx + 1);
               $(el).on("click", () => {
-                this.clicked = true;
+                            this.clicked = true;
                 setTimeout(() => (this.clicked = false), 400);
                 smoothScroll.lenis.scrollTo(rectTop + 5, {
                   duration: 0.4,
@@ -2090,11 +2172,11 @@ const script = () => {
             }
           });
 
-        this.tlParallax = gsap.timeline({
-          scrollTrigger: {
+                this.tlParallax = gsap.timeline({
+                    scrollTrigger: {
             trigger: $(this.el).find(".home-yacth-bg"),
             start: "top bottom",
-            end: `bottom+=${viewport.h > 991 ? 80 : 0}% top`,
+                        end: `bottom+=${viewport.h > 991 ? 80 : 0}% top`,
             endTrigger: $(this.el).find(".home-yacth-empty-block"),
             scrub: 1,
           },
@@ -2114,13 +2196,13 @@ const script = () => {
         );
       }
       animationReveal() {}
-      updateSlideActive() {
+            updateSlideActive() {
         let slideEl = [
           ".home-yacth-main-slide-thumb",
           ".home-yacth-main-slide-text",
           ".home-yacth-main-slide-gallery",
         ];
-        slideEl.forEach((el) => {
+                slideEl.forEach((el) => {
           $(this.el).find(el).removeClass("active");
           $(this.el)
             .find(".home-yacth-main-slide-item")
@@ -2134,7 +2216,7 @@ const script = () => {
           .addClass("active")
           .siblings()
           .removeClass("active");
-        if (viewport.w <= 767) {
+                if (viewport.w <= 767) {
           let listRect = $(this.el)
             .select(".home-yacth-main-bar-cms")
             .getBoundingClientRect();
@@ -2151,9 +2233,9 @@ const script = () => {
             duration: 0.6,
             ease: "power2.inOut",
           });
-        }
-      }
-      interact() {
+                }
+            }
+            interact() {
         $(this.el)
           .selectAll(".home-yacth-main-slide-item")
           .each((_, item) => {
@@ -2278,43 +2360,149 @@ const script = () => {
                 },
               );
           });
-      }
-      destroy() {
-        this.currentIndex = 0;
-        if (this.raqID.length !== 0) {
-          this.raqID.forEach((id) => cancelAnimationFrame(id));
-          this.raqID = [];
-        }
-        if (this.tlOverlap) {
-          this.tlOverlap.kill();
-        }
-        if (this.tlForceScroll) {
-          this.tlForceScroll.kill();
-        }
-      }
-    },
-    Team: class extends TriggerSetup {
-      constructor() {
-        super();
-        this.el = null;
-        this.tlOverlap = null;
-        this.tlScaleImage = null;
-      }
-      trigger(data) {
+            }
+            destroy() {
+                this.currentIndex = 0;
+                if (this.raqID.length !== 0) {
+                    this.raqID.forEach((id) => cancelAnimationFrame(id));
+                    this.raqID = [];
+                }
+                if (this.tlOverlap) {
+                    this.tlOverlap.kill();
+                }
+                if (this.tlForceScroll) {
+                    this.tlForceScroll.kill();
+                }
+            }
+        },
+        Team: class extends TriggerSetup {
+            constructor() {
+                super();
+                this.el = null;
+                this.tlOverlap = null;
+                this.tlScaleImage = null;
+                this.stYachtFrames = null;
+                this.onYachtResize = null;
+                this.yachtReady = false;
+            }
+            trigger(data) {
         this.el = data.next.container.querySelector(".home-team-wrap");
         if (!this.el) return;
         requestAnimationFrame(() => this.animationScrub());
-      }
-      animationScrub() {
-        if (!this.el) return;
+            }
+            loadYachtFrames(canvas) {
+        if (!canvas) return Promise.resolve([]);
+        const count = Math.max(
+          1,
+          parseInt(canvas.getAttribute("data-frame-count"), 10) || 5,
+        );
+        const pattern =
+          canvas.getAttribute("data-frame-src") ||
+          "/images/Yacht_frames/frame_{n}.jpg";
+        const urls = Array.from({ length: count }, (_, i) =>
+          pattern.replace("{n}", String(i + 1).padStart(3, "0")),
+        );
+        return Promise.all(
+          urls.map(
+            (src) =>
+              new Promise((resolve) => {
+                const im = new Image();
+                im.decoding = "async";
+                im.onload = () => resolve(im);
+                im.onerror = () => resolve(null);
+                im.src = src;
+              }),
+          ),
+        ).then((list) => list.filter(Boolean));
+            }
+            sizeYachtCanvas(canvas) {
+        if (!canvas) return null;
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const w = Math.max(1, canvas.clientWidth);
+        const h = Math.max(1, canvas.clientHeight);
+        const nextW = Math.round(w * dpr);
+        const nextH = Math.round(h * dpr);
+        if (canvas.width !== nextW || canvas.height !== nextH) {
+          canvas.width = nextW;
+          canvas.height = nextH;
+        }
+        const ctx = canvas.getContext("2d");
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return { ctx, w, h };
+            }
+            drawYachtFrame(canvas, img) {
+        if (!canvas || !img || !img.width) return;
+        const sized = this.sizeYachtCanvas(canvas);
+        if (!sized) return;
+        const { ctx, w, h } = sized;
+        const ir = img.width / img.height;
+        const cr = w / h;
+        let dw;
+        let dh;
+        if (ir > cr) {
+          dh = h;
+          dw = dh * ir;
+        } else {
+          dw = w;
+          dh = dw / ir;
+        }
+        const dx = (w - dw) * 0.5;
+        const dy = (h - dh) * 0.5;
+        ctx.clearRect(0, 0, w, h);
+        ctx.drawImage(img, dx, dy, dw, dh);
+            }
+            bindYachtFrames(thumb, canvas, images, scroller, reduceMotion) {
+        if (!thumb || !canvas || !images.length) return;
+        const state = { i: 0 };
+        const paint = (progress) => {
+          const i = Math.round(
+            gsap.utils.clamp(0, 1, progress) * (images.length - 1),
+          );
+          if (i === state.i && canvas.dataset.painted === "1") return;
+          state.i = i;
+          this.drawYachtFrame(canvas, images[i]);
+          canvas.dataset.painted = "1";
+        };
+        this.drawYachtFrame(canvas, images[0]);
+        canvas.dataset.painted = "1";
+        if (this.onYachtResize) {
+          window.removeEventListener("resize", this.onYachtResize);
+        }
+        this.onYachtResize = () =>
+          this.drawYachtFrame(canvas, images[state.i]);
+        window.addEventListener("resize", this.onYachtResize);
+        if (reduceMotion) {
+          paint(0);
+          return;
+        }
+        const pinLen = () =>
+          Math.round(
+            viewport.h * (images.length <= 8 ? 2.2 : 3.2),
+          );
+        this.stYachtFrames = ScrollTrigger.create({
+          trigger: thumb,
+          start: "top top",
+          end: () => `+=${pinLen()}`,
+          pin: true,
+          pinSpacing: true,
+          scrub: 0.45,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+          ...(scroller ? { scroller } : {}),
+          onUpdate: (self) => paint(self.progress),
+          onRefresh: (self) => paint(self.progress),
+        });
+            }
+            animationScrub() {
+        if (!this.el || this.yachtReady) return;
+        this.yachtReady = true;
         this.el
           .querySelectorAll(".home-team-item-img")
           .forEach((el) => new ParallaxImage({ el: el.querySelector("img") }));
         const thumb = $(this.el).select(".home-team-thumb");
         const inner = $(this.el).select(".home-team-thumb-inner");
-        const img = $(this.el).select(
-          ".home-team-thumb-inner img, .home-team-thumb-inner video",
-        );
+        const canvas = $(this.el).select(".yacht-frame-canvas");
+        const media = inner.querySelectorAll("canvas, img, video");
         const copy = $(this.el).select(".yacht-copy");
         if (!thumb || !inner) return;
 
@@ -2328,29 +2516,25 @@ const script = () => {
           "(prefers-reduced-motion: reduce)",
         ).matches;
 
-        const playYachtVideo = () => {
-          if (!(img instanceof HTMLVideoElement)) return;
-          img.muted = true;
-          img.playsInline = true;
-          img.play().catch(() => {});
-        };
-
-        if (img instanceof HTMLVideoElement) {
-          if (reduceMotion) {
-            img.pause();
-            img.removeAttribute("autoplay");
-          } else {
-            playYachtVideo();
-          }
-        }
-
         gsap.set(inner, { clipPath: clipFrom, webkitClipPath: clipFrom });
-        if (img) gsap.set(img, { scale: 1.18, transformOrigin: "50% 70%" });
+        if (media.length) gsap.set(media, { scale: 1.18, transformOrigin: "50% 70%" });
         if (copy) gsap.set(copy, { autoAlpha: 0, y: 28 });
+
+        this.loadYachtFrames(canvas).then((images) => {
+          if (!this.el) return;
+          this.bindYachtFrames(
+            thumb,
+            canvas,
+            images,
+            viewport.w <= 767 ? document.querySelector(".body-inner") : null,
+            reduceMotion,
+          );
+          if (typeof ScrollTrigger !== "undefined") ScrollTrigger.refresh();
+        });
 
         if (reduceMotion) {
           gsap.set(inner, { clipPath: clipTo, webkitClipPath: clipTo });
-          if (img) gsap.set(img, { scale: 1 });
+          if (media.length) gsap.set(media, { scale: 1 });
           if (copy) gsap.set(copy, { autoAlpha: 1, y: 0 });
           return;
         }
@@ -2366,8 +2550,6 @@ const script = () => {
             end: "top top",
             scrub: true,
             invalidateOnRefresh: true,
-            onEnter: playYachtVideo,
-            onEnterBack: playYachtVideo,
           },
         });
         this.tlScaleImage.fromTo(
@@ -2375,9 +2557,9 @@ const script = () => {
           { clipPath: clipFrom, webkitClipPath: clipFrom },
           { clipPath: clipTo, webkitClipPath: clipTo, duration: 1 },
         );
-        if (img) {
+        if (media.length) {
           this.tlScaleImage.fromTo(
-            img,
+            media,
             { scale: 1.18, transformOrigin: "50% 70%" },
             { scale: 1, transformOrigin: "50% 70%", duration: 1 },
             0,
@@ -2394,15 +2576,25 @@ const script = () => {
       }
       animationReveal() {}
       interact() {}
-      destroy() {
-        if (this.tlOverlap) {
-          this.tlOverlap.kill();
-        }
-        if (this.tlScaleImage) {
-          this.tlScaleImage.kill();
-        }
-      }
-    },
+            destroy() {
+                this.yachtReady = false;
+                if (this.onYachtResize) {
+                    window.removeEventListener("resize", this.onYachtResize);
+                    this.onYachtResize = null;
+                }
+                if (this.tlOverlap) {
+                    this.tlOverlap.kill();
+                }
+                if (this.tlScaleImage) {
+                    this.tlScaleImage.kill();
+                    this.tlScaleImage = null;
+                }
+                if (this.stYachtFrames) {
+                    this.stYachtFrames.kill();
+                    this.stYachtFrames = null;
+                }
+            }
+        },
     Lookbook: class extends TriggerSetup {
       constructor() {
         super();
@@ -2536,25 +2728,25 @@ const script = () => {
         }
       }
     },
-    Journal: class extends TriggerSetup {
-      constructor() {
-        super();
-        this.el = null;
-        this.tlOverlap = null;
-        this.tlHorizontal = null;
-      }
-      trigger(data) {
+        Journal: class extends TriggerSetup {
+            constructor() {
+                super();
+                this.el = null;
+                this.tlOverlap = null;
+                this.tlHorizontal = null;
+            }
+            trigger(data) {
         this.el = data.next.container.querySelector(".home-journal-wrap");
         if (!this.el) return;
-        super.setTrigger(this.el, this.onTrigger.bind(this));
-      }
-      onTrigger() {
-        this.animationScrub();
-        this.animationReveal();
-        this.interact();
-      }
-      animationScrub() {
-        if (viewport.w > 991) {
+                super.setTrigger(this.el, this.onTrigger.bind(this));
+            }
+            onTrigger() {
+                this.animationScrub();
+                this.animationReveal();
+                this.interact();
+            }
+            animationScrub() {
+                if (viewport.w > 991) {
           $(".home-journal-inner").addClass("swiper");
           $(".home-journal-sc-wrap").addClass("swiper-wrapper");
           $(".home-journal-sc").addClass("swiper-slide");
@@ -2570,15 +2762,15 @@ const script = () => {
                   $(el).find("img").attr("data-swiper-parallax-x").slice(0, 2) /
                     100 +
                   1.1;
-                gsap.set($(el), { scale: scaleOffset });
-              }
+                            gsap.set($(el), { scale: scaleOffset });
+                        }
             });
           new Swiper($(this.el).select(".home-journal-inner"), {
             slidesPerView: "auto",
-            spaceBetween: 0,
-            freeMode: true,
-            parallax: true,
-            mousewheel: {
+                        spaceBetween: 0,
+                        freeMode: true,
+                        parallax: true,
+                        mousewheel: {
               forceToAxis: true,
             },
           });
@@ -2595,31 +2787,31 @@ const script = () => {
       }
       animationReveal() {}
       interact() {}
-      destroy() {
-        if (this.tlOverlap) {
-          this.tlOverlap.kill();
-        }
-        if (this.tlHorizontal) {
-          this.tlHorizontal.kill();
-        }
-      }
-    },
-    Article: class extends TriggerSetup {
-      constructor() {
-        super();
-        this.el = null;
-        this.tlOverlap = null;
+            destroy() {
+                if (this.tlOverlap) {
+                    this.tlOverlap.kill();
+                }
+                if (this.tlHorizontal) {
+                    this.tlHorizontal.kill();
+                }
+            }
+        },
+        Article: class extends TriggerSetup {
+            constructor() {
+                super();
+                this.el = null;
+                this.tlOverlap = null;
         this.tlReveal = null;
         this.stReveal = null;
         this.splitHeading = null;
-      }
-      trigger(data) {
+            }
+            trigger(data) {
         this.el = data.next.container.querySelector(".home-article-wrap");
         if (!this.el) return;
-        super.setTrigger(this.el, this.onTrigger.bind(this));
-      }
-      onTrigger() {
-        this.interact();
+                super.setTrigger(this.el, this.onTrigger.bind(this));
+            }
+            onTrigger() {
+                this.interact();
       }
       animationScrub() {}
       animationReveal() {
@@ -2745,8 +2937,8 @@ const script = () => {
           onEnter: () => this.tlReveal && this.tlReveal.play(),
         });
         this.tlReveal.play();
-      }
-      interact() {
+            }
+            interact() {
         if (!this.el) return;
         const $wrap = $(this.el);
         $wrap.find(".home-article-main-cms").addClass("swiper");
@@ -2807,7 +2999,7 @@ const script = () => {
           watchSlidesProgress: true,
           observer: true,
           observeSlideChildren: true,
-          navigation: {
+                    navigation: {
             nextEl: $wrap.select(".home-article-control-item.next"),
             prevEl: $wrap.select(".home-article-control-item.prev"),
             disabledClass: "disabled",
@@ -2842,10 +3034,10 @@ const script = () => {
           swiper.slideTo(Math.min(1, Math.max(0, swiper.slides.length - 1)), 0);
           renderPager();
         });
-      }
-      destroy() {
-        if (this.tlOverlap) {
-          this.tlOverlap.kill();
+            }
+            destroy() {
+                if (this.tlOverlap) {
+                    this.tlOverlap.kill();
           this.tlOverlap = null;
         }
         if (this.tlReveal) {
@@ -3597,111 +3789,111 @@ const script = () => {
       }
     },
   };
-  const BespokePage = {
-    Hero: class {
-      constructor() {
-        this.el = null;
-        this.tlOnce = null;
-        this.tlEnter = null;
-        this.tlTriggerEnter = null;
-        this.tlOverlap = null;
-      }
-      setup(data, mode) {
+    const BespokePage = {
+        Hero: class {
+            constructor() {
+                this.el = null;
+                this.tlOnce = null;
+                this.tlEnter = null;
+                this.tlTriggerEnter = null;
+                this.tlOverlap = null;
+            }
+            setup(data, mode) {
         this.el = data.next.container.querySelector(".bes-hero-wrap");
         if (mode === "once") {
-          this.setupOnce(data);
+                    this.setupOnce(data);
         } else if (mode === "enter") {
-          this.setupEnter(data);
+                    this.setupEnter(data);
         } else return;
 
-        this.animationScrub();
-      }
-      setupOnce(data) {
-        this.tlOnce = gsap.timeline({
-          paused: true,
+                this.animationScrub();
+            }
+            setupOnce(data) {
+                this.tlOnce = gsap.timeline({
+                    paused: true,
           onStart: () => $("[data-init-hidden]").removeAttr("data-init-hidden"),
         });
-      }
-      setupEnter(data) {
-        this.tlEnter = gsap.timeline({
-          paused: true,
+            }
+            setupEnter(data) {
+                this.tlEnter = gsap.timeline({
+                    paused: true,
           onStart: () => $("[data-init-hidden]").removeAttr("data-init-hidden"),
         });
 
-        this.tlTriggerEnter = gsap.timeline({
-          scrollTrigger: {
-            trigger: this.el,
+                this.tlTriggerEnter = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: this.el,
             start: "top bottom+=50%",
             end: "bottom top-=50%",
-            once: true,
-            onEnter: () => this.tlEnter.play(),
-            onEnterBack: () => this.tlEnter.play(),
+                        once: true,
+                        onEnter: () => this.tlEnter.play(),
+                        onEnterBack: () => this.tlEnter.play(),
             onStart: () =>
               $("[data-init-hidden]").removeAttr("data-init-hidden"),
           },
         });
-      }
-      playOnce() {
-        this.tlOnce.play();
-      }
+            }
+            playOnce() {
+                this.tlOnce.play();
+            }
       playEnter() {}
       animationReveal(timeline) {}
-      animationScrub() {
+            animationScrub() {
         new ParallaxImage({ el: $(this.el).select(".bes-hero-main-img img") });
         new ParallaxImage({ el: $(this.el).select(".bes-hero-sub-img img") });
-      }
-      destroy() {
-        if (this.tlOnce) {
-          this.tlOnce.kill();
-        }
-        if (this.tlEnter) {
-          this.tlEnter.kill();
-        }
-        if (this.tlTriggerEnter) {
-          this.tlTriggerEnter.kill();
-        }
-        if (this.tlOverlap) {
-          this.tlOverlap.kill();
-        }
-      }
-    },
-    Nav: class extends TriggerSetup {
-      constructor() {
-        super();
-        this.el = null;
-      }
-      trigger(data) {
+            }
+            destroy() {
+                if (this.tlOnce) {
+                    this.tlOnce.kill();
+                }
+                if (this.tlEnter) {
+                    this.tlEnter.kill();
+                }
+                if (this.tlTriggerEnter) {
+                    this.tlTriggerEnter.kill();
+                }
+                if (this.tlOverlap) {
+                    this.tlOverlap.kill();
+                }
+            }
+        },
+        Nav: class extends TriggerSetup {
+            constructor() {
+                super();
+                this.el = null;
+            }
+            trigger(data) {
         this.el = data.next.container.querySelector(".bes-nav.mix");
         this.allNav = data.next.container.querySelectorAll(".bes-nav");
-        super.setTrigger(this.el, this.onTrigger.bind(this));
-      }
-      onTrigger() {
-        this.animationScrub();
-        this.animationReveal();
-        this.interact();
-      }
-      interact() {
-        this.scrollActive();
-        if (viewport.w <= 767) {
-          this.interactMobile();
-        }
-      }
-      scrollActive() {
+                super.setTrigger(this.el, this.onTrigger.bind(this));
+            }
+            onTrigger() {
+                this.animationScrub();
+                this.animationReveal();
+                this.interact();
+            }
+            interact() {
+                this.scrollActive();
+                if (viewport.w <= 767) {
+                    this.interactMobile();
+                }
+            }
+            scrollActive() {
         let currentID = "";
         let prevID = "";
         let allSection = $(this.el)
           .nextUntil(".bes-destin-sc")
           .selectAll(".bes-destin-sc");
 
-        const updateActive = (id, isActive) => {
-          $(this.allNav).each((_, nav) => {
+                const updateActive = (id, isActive) => {
+                    $(this.allNav).each((_, nav) => {
             let allLink = $(nav).selectAll(".bes-nav-item-link");
-            if (viewport.w > 991) {
-              allLink.each((idx, el) => {
+                        if (viewport.w > 991) {
+                            allLink.each((idx, el) => {
                 if ($(el).attr("data-sub-link") === id && currentID === id) {
-                  if (isActive) {
-                    if (prevID !== currentID) {
-                      $(this.allNav).each((_, nav) => {
+                                    if (isActive) {
+                                        if (prevID !== currentID) {
+                                            $(this.allNav).each((_, nav) => {
                         $(nav)
                           .find(".bes-nav-active-inner")
                           .css(
@@ -3709,8 +3901,8 @@ const script = () => {
                             `${idx}fr 1fr ${allLink.length - idx - 1}fr`,
                           );
                       });
-                      prevID = currentID;
-                    }
+                                            prevID = currentID;
+                                        }
                     if (!$(nav).hasClass("expand")) {
                       $(nav).addClass("expand");
                     }
@@ -3730,12 +3922,12 @@ const script = () => {
                 }
               });
             } else {
-              allLink.each((idx, el) => {
+                            allLink.each((idx, el) => {
                 if ($(el).attr("data-sub-link") === id && currentID === id) {
-                  if (isActive) {
-                    if (prevID !== currentID) {
-                      prevID = currentID;
-                    }
+                                    if (isActive) {
+                                        if (prevID !== currentID) {
+                                            prevID = currentID;
+                                        }
                     if (!$(nav).hasClass("expand")) {
                       $(nav).addClass("expand");
                       $(nav).find(".bes-nav-active").slideDown();
@@ -3768,38 +3960,38 @@ const script = () => {
           });
         };
         smoothScroll.lenis.on("scroll", function (e) {
-          let currScroll = e.scroll;
-          const updateTOC = () => {
-            allSection.each((idx, heading) => {
-              let rect = $(heading).get(0).getBoundingClientRect();
+                    let currScroll = e.scroll;
+                    const updateTOC = () => {
+                        allSection.each((idx, heading) => {
+                            let rect = $(heading).get(0).getBoundingClientRect();
               let id = $(heading).attr("id");
               let isActive =
                 isInViewport(heading) &&
                 rect.top <= window.innerHeight / 2 &&
                 rect.bottom >= window.innerHeight / 2;
-              if (isActive) {
-                currentID = id;
-              }
-              updateActive(id, isActive);
-            });
+                            if (isActive) {
+                                currentID = id;
+                            }
+                            updateActive(id, isActive);
+                        });
           };
-          updateTOC();
-        });
-      }
-      interactMobile() {
+                    updateTOC();
+                });
+            }
+            interactMobile() {
         $(this.allNav)
           .eq(0)
           .find(".bes-nav-active")
           .on("click", function (e) {
-            e.preventDefault();
+                    e.preventDefault();
             $(e.target).toggleClass("active");
-            $(e.target).siblings().slideToggle();
+                    $(e.target).siblings().slideToggle();
           });
         $(this.allNav)
           .eq(0)
           .find(".bes-nav-item-link")
           .on("click", (e) => {
-            e.preventDefault();
+                    e.preventDefault();
             smoothScroll.lenis.scrollTo(
               `#${$(e.currentTarget).attr("data-sub-link")}`,
               { force: true },
@@ -3811,23 +4003,23 @@ const script = () => {
       animationScrub() {}
       animationReveal() {}
       destroy() {}
-    },
-    Map: class extends TriggerSetup {
-      constructor() {
-        super();
-        this.el = null;
-        this.tlOverlap = null;
-      }
-      trigger(data) {
+        },
+        Map: class extends TriggerSetup {
+            constructor() {
+                super();
+                this.el = null;
+                this.tlOverlap = null;
+            }
+            trigger(data) {
         this.el = data.next.container.querySelector(".bes-map-wrap");
-        super.setTrigger(this.el, this.onTrigger.bind(this));
-      }
-      onTrigger() {
-        this.interact();
-      }
+                super.setTrigger(this.el, this.onTrigger.bind(this));
+            }
+            onTrigger() {
+                this.interact();
+            }
       animationScrub() {}
-      interact() {
-        const activeIndex = (idx) => {
+            interact() {
+                const activeIndex = (idx) => {
           $(this.el)
             .find(".bes-map-destin-item")
             .eq(idx)
@@ -3842,11 +4034,11 @@ const script = () => {
             .removeClass("active");
         };
 
-        if (viewport.w > 991) {
+                if (viewport.w > 991) {
           $(this.el)
             .find(".bes-map-destin-item, .bes-map-location-item")
             .on("mouseenter", function (e) {
-              activeIndex($(this).index());
+                        activeIndex($(this).index());
             });
 
           $(this.el)
@@ -3856,13 +4048,13 @@ const script = () => {
               $(this.el).find(".bes-map-location-item").removeClass("active");
             });
         } else {
-          // $(this.el).find('.home-map-destin-item, .home-map-location-item').on('click', function(e) {
-          //     activeIndex($(this).index());
-          // })
-        }
+                    // $(this.el).find('.home-map-destin-item, .home-map-location-item').on('click', function(e) {
+                    //     activeIndex($(this).index());
+                    // })
+                }
 
-        if (viewport.w <= 991) {
-          if (viewport.w <= 767) {
+                if (viewport.w <= 991) {
+                    if (viewport.w <= 767) {
             $(this.el)
               .find(".bes-map-location-list")
               .prepend($(this.el).find(".bes-map-location-item.full-map"));
@@ -3883,40 +4075,40 @@ const script = () => {
           let swiper = new Swiper($(this.el).select(".bes-map-destin-cms"), {
             slidesPerView: "auto",
             spaceBetween: cvUnit(viewport.w > 767 ? 20 : 16, "rem"),
-            on: {
-              init: () => viewport.w <= 767 && activeIndex(0),
-              slideChange: (slide) => {
-                let index = slide.activeIndex;
-                viewport.w <= 767 && activeIndex(index);
+                        on: {
+                            init: () => viewport.w <= 767 && activeIndex(0),
+                            slideChange: (slide) => {
+                                let index = slide.activeIndex;
+                                viewport.w <= 767 && activeIndex(index);
               },
             },
           });
-        }
-      }
-      destroy() {
-        if (this.tlOverlap) {
-          this.tlOverlap.kill();
-        }
-      }
-    },
-    Destination: class extends TriggerSetup {
-      constructor() {
-        super();
-        this.el = null;
-        this.tlOverlap = null;
-        this.tlScaleThumb = null;
-      }
-      trigger(data) {
+                }
+            }
+            destroy() {
+                if (this.tlOverlap) {
+                    this.tlOverlap.kill();
+                }
+            }
+        },
+        Destination: class extends TriggerSetup {
+            constructor() {
+                super();
+                this.el = null;
+                this.tlOverlap = null;
+                this.tlScaleThumb = null;
+            }
+            trigger(data) {
         this.el = data.next.container.querySelector(".bes-destin-wrap");
-        super.setTrigger(this.el, this.onTrigger.bind(this));
-        this.tlScaleThumb = [];
-      }
-      onTrigger() {
-        this.animationScrub();
-        this.animationReveal();
-        this.interact();
-      }
-      animationScrub() {
+                super.setTrigger(this.el, this.onTrigger.bind(this));
+                this.tlScaleThumb = [];
+            }
+            onTrigger() {
+                this.animationScrub();
+                this.animationReveal();
+                this.interact();
+            }
+            animationScrub() {
         $(this.el)
           .selectAll(".bes-destin-sc")
           .each((idx, el) => {
@@ -3937,14 +4129,14 @@ const script = () => {
             });
             this.tlScaleThumb.push(
               gsap
-                .timeline({
-                  scrollTrigger: {
+                        .timeline({
+                            scrollTrigger: {
                     trigger: $(el).find(".bes-destin-thumb"),
                     start: "top bottom",
                     end: "bottom bottom",
                     scrub: true,
-                  },
-                  defaults: {
+                            },
+                            defaults: {
                     ease: "none",
                   },
                 })
@@ -3964,21 +4156,21 @@ const script = () => {
                   "<=0.1",
                 ),
             );
-            // this.tlOverlap.push(
-            //     gsap
-            //         .timeline({
-            //             scrollTrigger: {
-            //                 trigger: $(el).find('.bes-destin-thumb'),
-            //                 start: 'bottom-=50% bottom',
-            //                 end: `bottom top`,
-            //                 scrub: 1
-            //             },
-            //             defaults: {
-            //                 ease: 'none'
-            //             }
-            //         })
-            //         .to($(el).find('.bes-destin-thumb-inner'), { yPercent: -30, scale: 1.2, transformOrigin: 'top', duration: 1 }))
-            //         // .to($(el).select('.bes-destin-thumb-txt'), { scale: 1.5, duration: 1, ease: 'power2.out'  }, "<=0.1"))
+                    // this.tlOverlap.push(
+                    //     gsap
+                    //         .timeline({
+                    //             scrollTrigger: {
+                    //                 trigger: $(el).find('.bes-destin-thumb'),
+                    //                 start: 'bottom-=50% bottom',
+                    //                 end: `bottom top`,
+                    //                 scrub: 1
+                    //             },
+                    //             defaults: {
+                    //                 ease: 'none'
+                    //             }
+                    //         })
+                    //         .to($(el).find('.bes-destin-thumb-inner'), { yPercent: -30, scale: 1.2, transformOrigin: 'top', duration: 1 }))
+                    //         // .to($(el).select('.bes-destin-thumb-txt'), { scale: 1.5, duration: 1, ease: 'power2.out'  }, "<=0.1"))
             $(el)
               .find(".bes-destin-explore-item")
               .each((idx, item) => {
@@ -3992,14 +4184,14 @@ const script = () => {
             new Swiper($(el).select(".bes-destin-explore-cms"), {
               slidesPerView: "auto",
               spaceBetween: cvUnit(viewport.w > 767 ? 20 : 16, "rem"),
-              navigation: {
+                        navigation: {
                 nextEl: $(el).select(".bes-destin-explore-control-item.next"),
                 prevEl: $(el).select(".bes-destin-explore-control-item.prev"),
                 disabledClass: "disabled",
               },
             });
-          });
-        if (viewport.w > 767) {
+                });
+                if (viewport.w > 767) {
           gsap.set($(this.el).find(".bes-destin-sc:last-child"), {
             filter: "brightness(100%) blur(0px)",
             perspective: "2000px",
@@ -4011,10 +4203,10 @@ const script = () => {
           });
           this.tlOverlap = gsap
             .timeline({
-              scrollTrigger: {
-                trigger: this.el,
+                        scrollTrigger: {
+                            trigger: this.el,
                 start: `bottom-=${cvUnit(110, "vh")} bottom`,
-                end: `bottom bottom`,
+                            end: `bottom bottom`,
                 scrub: 1,
               },
             })
@@ -4038,34 +4230,34 @@ const script = () => {
       }
       animationReveal() {}
       interact() {}
-      destroy() {
-        if (this.tlOverlap) {
-          this.tlOverlap.kill();
-        }
-        if (this.tlScaleThumb.length > 0) {
+            destroy() {
+                if (this.tlOverlap) {
+                    this.tlOverlap.kill();
+                }
+                if (this.tlScaleThumb.length > 0) {
           this.tlScaleThumb.forEach((tl) => tl.kill());
-        }
-      }
-    },
-    Fact: class extends TriggerSetup {
-      constructor() {
-        super();
-        this.el = null;
-      }
-      trigger(data) {
+                }
+            }
+        },
+        Fact: class extends TriggerSetup {
+            constructor() {
+                super();
+                this.el = null;
+            }
+            trigger(data) {
         this.el = data.next.container.querySelector(".bes-fact-wrap");
-        super.setTrigger(this.el, this.onTrigger.bind(this));
-      }
-      onTrigger() {
-        this.animationScrub();
-        this.animationReveal();
-        this.interact();
-      }
-      animationScrub() {
-        if (viewport.w > 767) {
-          this.tlStick = gsap.timeline({
-            scrollTrigger: {
-              trigger: this.el,
+                super.setTrigger(this.el, this.onTrigger.bind(this));
+            }
+            onTrigger() {
+                this.animationScrub();
+                this.animationReveal();
+                this.interact();
+            }
+            animationScrub() {
+                if (viewport.w > 767) {
+                    this.tlStick = gsap.timeline({
+                        scrollTrigger: {
+                            trigger: this.el,
               start: `top+=${$(this.el).find(".bes-fact-item").height()} top`,
               end: `bottom-=${$(this.el).find(".bes-fact-item").height()} bottom`,
               scrub: 1,
@@ -4093,19 +4285,19 @@ const script = () => {
                 "<=0",
               );
               let desc = $(el).find(".bes-fact-item-desc .txt").html();
-              let descHTML = cloneDesc.clone().html(desc);
-              if (idx === 0) {
+                        let descHTML = cloneDesc.clone().html(desc);
+                        if (idx === 0) {
                 descHTML.addClass("active");
                 $(el).addClass("active");
-              }
+                        }
               $(this.el).find(".bes-fact-thumb-txt").append(descHTML);
               if (idx < $(this.el).selectAll(".bes-fact-item").length - 1) {
-                this.tlStick
+                            this.tlStick
                   .to($(this.el).selectAll(".bes-fact-thumb-item").eq(idx), {
                     yPercent: -100,
                     duration: 1,
                     onUpdate: function () {
-                      if (this.ratio >= 0.5) {
+                                        if (this.ratio >= 0.5) {
                         $(el)
                           .next()
                           .addClass("active")
@@ -4116,8 +4308,8 @@ const script = () => {
                           .addClass("active")
                           .siblings()
                           .removeClass("active");
-                      }
-                      if (this.ratio < 0.5) {
+                                        }
+                                        if (this.ratio < 0.5) {
                         $(el)
                           .addClass("active")
                           .siblings()
@@ -4126,9 +4318,9 @@ const script = () => {
                           .addClass("active")
                           .siblings()
                           .removeClass("active");
-                      }
-                    },
-                  })
+                                        }
+                                    },
+                                })
                   .to(
                     $(this.el)
                       .selectAll(".bes-fact-thumb-item")
@@ -4152,9 +4344,9 @@ const script = () => {
                     { yPercent: 0, duration: 1 },
                     "<=0",
                   );
-              }
+                        }
 
-              requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {
                 const rectTop =
                   $(this.el).find(".bes-fact-main").offset().top +
                   ((this.tlStick.scrollTrigger.end -
@@ -4169,98 +4361,98 @@ const script = () => {
         }
       }
       animationReveal() {}
-      interact() {
-        if (viewport.w <= 767) {
+            interact() {
+                if (viewport.w <= 767) {
           $(this.el).find(".bes-fact-item-img img").removeAttr("loading");
-          const DOM = {
+                    const DOM = {
             accordion: $(this.el).find(".bes-fact-item"),
             accordionTitle: $(this.el).find(".bes-fact-item-head"),
             accordionContent: $(this.el).find(".bes-fact-item-content"),
           };
-          const activeAccordion = (index) => {
-            DOM.accordionContent.eq(index).slideToggle("slow");
-            DOM.accordion.eq(index).toggleClass("active");
+                    const activeAccordion = (index) => {
+                        DOM.accordionContent.eq(index).slideToggle("slow");
+                        DOM.accordion.eq(index).toggleClass("active");
 
             DOM.accordionContent
               .not(DOM.accordionContent.eq(index))
               .slideUp("slow");
-            DOM.accordion.not(DOM.accordion.eq(index)).removeClass("active");
+                        DOM.accordion.not(DOM.accordion.eq(index)).removeClass("active");
           };
-          DOM.accordionTitle.on("click", function () {
-            let index = $(this).parent().index();
-            activeAccordion(index);
+                    DOM.accordionTitle.on("click", function () {
+                        let index = $(this).parent().index();
+                        activeAccordion(index);
           });
-        }
-      }
+                }
+            }
       destroy() {}
-    },
-    Footer: class extends Footer {
+        },
+        Footer: class extends Footer {
       constructor() {
         super();
-      }
+        }
     },
   };
-  const YacthPage = {
-    Hero: class {
-      constructor() {
-        this.el = null;
-        this.tlOnce = null;
-        this.tlEnter = null;
-        this.tlTriggerEnter = null;
-        this.tlChangeBG = null;
-      }
-      setup(data, mode) {
+    const YacthPage = {
+        Hero: class {
+            constructor() {
+                this.el = null;
+                this.tlOnce = null;
+                this.tlEnter = null;
+                this.tlTriggerEnter = null;
+                this.tlChangeBG = null;
+            }
+            setup(data, mode) {
         this.el = data.next.container.querySelector(".yacth-hero-wrap");
         if (mode === "once") {
-          this.setupOnce(data);
+                    this.setupOnce(data);
         } else if (mode === "enter") {
-          this.setupEnter(data);
+                    this.setupEnter(data);
         } else return;
 
-        this.animationScrub();
-      }
-      setupOnce(data) {
-        this.tlOnce = gsap.timeline({
-          paused: true,
+                this.animationScrub();
+            }
+            setupOnce(data) {
+                this.tlOnce = gsap.timeline({
+                    paused: true,
           onStart: () => $("[data-init-hidden]").removeAttr("data-init-hidden"),
         });
-      }
-      setupEnter(data) {
-        this.tlEnter = gsap.timeline({
-          paused: true,
+            }
+            setupEnter(data) {
+                this.tlEnter = gsap.timeline({
+                    paused: true,
           onStart: () => $("[data-init-hidden]").removeAttr("data-init-hidden"),
         });
 
-        this.tlTriggerEnter = gsap.timeline({
-          scrollTrigger: {
-            trigger: this.el,
+                this.tlTriggerEnter = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: this.el,
             start: "top bottom+=50%",
             end: "bottom top-=50%",
-            once: true,
-            onEnter: () => this.tlEnter.play(),
-            onEnterBack: () => this.tlEnter.play(),
+                        once: true,
+                        onEnter: () => this.tlEnter.play(),
+                        onEnterBack: () => this.tlEnter.play(),
             onStart: () =>
               $("[data-init-hidden]").removeAttr("data-init-hidden"),
           },
         });
-      }
-      playOnce() {
-        this.tlOnce.play();
-      }
+            }
+            playOnce() {
+                this.tlOnce.play();
+            }
       playEnter() {}
       animationReveal(timeline) {}
-      animationScrub() {
+            animationScrub() {
         new ParallaxImage({ el: $(this.el).select(".yacth-hero-thumb img") });
-        if (viewport.w > 767) {
-          this.tlChangeBG = gsap.timeline({
-            scrollTrigger: {
-              trigger: this.el,
+                if (viewport.w > 767) {
+                    this.tlChangeBG = gsap.timeline({
+                        scrollTrigger: {
+                            trigger: this.el,
               start: "top top",
               end: "bottom 40%",
               scrub: true,
             },
           });
-          this.tlChangeBG
+                    this.tlChangeBG
             .fromTo(
               $(this.el).select(".yacth-hero"),
               { color: "#fff" },
@@ -4272,7 +4464,7 @@ const script = () => {
               { color: "#000", duration: 0.5, ease: "none" },
               "<=0",
             )
-            // .fromTo($(this.el).next().next(), { color: '#000' }, { color: '#fff', duration: .5, ease: 'none' }, "<=0")
+                        // .fromTo($(this.el).next().next(), { color: '#000' }, { color: '#fff', duration: .5, ease: 'none' }, "<=0")
             .fromTo(
               $(this.el).select(".yacth-hero-bg"),
               { autoAlpha: 1 },
@@ -4291,58 +4483,58 @@ const script = () => {
               { scale: 0.95, yPercent: 12, duration: 1.2 },
               "<=0",
             );
-        }
-      }
-      destroy() {
-        if (this.tlOnce) {
-          this.tlOnce.kill();
-        }
-        if (this.tlEnter) {
-          this.tlEnter.kill();
-        }
-        if (this.tlTriggerEnter) {
-          this.tlTriggerEnter.kill();
-        }
-        if (this.tlChangeBG) {
-          this.tlChangeBG.kill();
-        }
-      }
-    },
-    Nav: class extends TriggerSetup {
-      constructor() {
-        super();
-        this.el = null;
-      }
-      trigger(data) {
+                }
+            }
+            destroy() {
+                if (this.tlOnce) {
+                    this.tlOnce.kill();
+                }
+                if (this.tlEnter) {
+                    this.tlEnter.kill();
+                }
+                if (this.tlTriggerEnter) {
+                    this.tlTriggerEnter.kill();
+                }
+                if (this.tlChangeBG) {
+                    this.tlChangeBG.kill();
+                }
+            }
+        },
+        Nav: class extends TriggerSetup {
+            constructor() {
+                super();
+                this.el = null;
+            }
+            trigger(data) {
         this.el = data.next.container.querySelector(".yacth-nav.mix");
         this.allNav = data.next.container.querySelectorAll(".yacth-nav");
-        super.setTrigger(this.el, this.onTrigger.bind(this));
-      }
-      onTrigger() {
-        this.animationScrub();
-        this.animationReveal();
-        this.interact();
-      }
-      interact() {
-        this.scrollActive();
-        if (viewport.w <= 767) {
-          this.interactMobile();
-        }
-      }
-      scrollActive() {
+                super.setTrigger(this.el, this.onTrigger.bind(this));
+            }
+            onTrigger() {
+                this.animationScrub();
+                this.animationReveal();
+                this.interact();
+            }
+            interact() {
+                this.scrollActive();
+                if (viewport.w <= 767) {
+                    this.interactMobile();
+                }
+            }
+            scrollActive() {
         let currentID = "";
         let prevID = "";
         let allSection = $(this.el).nextAll().selectAll("section");
 
-        const updateActive = (id, isActive) => {
-          $(this.allNav).each((_, nav) => {
+                const updateActive = (id, isActive) => {
+                    $(this.allNav).each((_, nav) => {
             let allLink = $(nav).selectAll(".yacth-nav-item-link");
-            if (viewport.w > 991) {
-              allLink.each((idx, el) => {
+                        if (viewport.w > 991) {
+                            allLink.each((idx, el) => {
                 if ($(el).attr("data-sub-link") === id && currentID === id) {
-                  if (isActive) {
-                    if (prevID !== currentID) {
-                      $(this.allNav).each((_, nav) => {
+                                    if (isActive) {
+                                        if (prevID !== currentID) {
+                                            $(this.allNav).each((_, nav) => {
                         $(nav)
                           .find(".yacth-nav-active-inner")
                           .css(
@@ -4350,8 +4542,8 @@ const script = () => {
                             `${idx}fr 1fr ${allLink.length - idx - 1}fr`,
                           );
                       });
-                      prevID = currentID;
-                    }
+                                            prevID = currentID;
+                                        }
                     if (!$(nav).hasClass("expand")) {
                       $(nav).addClass("expand");
                     }
@@ -4369,12 +4561,12 @@ const script = () => {
                 }
               });
             } else {
-              allLink.each((idx, el) => {
+                            allLink.each((idx, el) => {
                 if ($(el).attr("data-sub-link") === id && currentID === id) {
-                  if (isActive) {
-                    if (prevID !== currentID) {
-                      prevID = currentID;
-                    }
+                                    if (isActive) {
+                                        if (prevID !== currentID) {
+                                            prevID = currentID;
+                                        }
                     if (!$(nav).hasClass("expand")) {
                       $(nav).addClass("expand");
                       $(nav).find(".yacth-nav-active").slideDown();
@@ -4407,38 +4599,38 @@ const script = () => {
           });
         };
         smoothScroll.lenis.on("scroll", function (e) {
-          let currScroll = e.scroll;
-          const updateTOC = () => {
-            allSection.each((idx, heading) => {
-              let rect = $(heading).get(0).getBoundingClientRect();
+                    let currScroll = e.scroll;
+                    const updateTOC = () => {
+                        allSection.each((idx, heading) => {
+                            let rect = $(heading).get(0).getBoundingClientRect();
               let id = $(heading).attr("id");
               let isActive =
                 isInViewport(heading) &&
                 rect.top <= window.innerHeight / 2 &&
                 rect.bottom >= window.innerHeight / 2;
-              if (isActive) {
-                currentID = id;
-              }
-              updateActive(id, isActive);
-            });
+                            if (isActive) {
+                                currentID = id;
+                            }
+                            updateActive(id, isActive);
+                        });
           };
-          updateTOC();
-        });
-      }
-      interactMobile() {
+                    updateTOC();
+                });
+            }
+            interactMobile() {
         $(this.allNav)
           .eq(0)
           .find(".yacth-nav-active")
           .on("click", (e) => {
-            e.preventDefault();
+                    e.preventDefault();
             $(e.target).toggleClass("active");
-            $(e.target).siblings().slideToggle();
+                    $(e.target).siblings().slideToggle();
           });
         $(this.allNav)
           .eq(0)
           .find(".yacth-nav-item-link")
           .on("click", (e) => {
-            e.preventDefault();
+                    e.preventDefault();
             smoothScroll.lenis.scrollTo(
               `#${$(e.currentTarget).attr("data-sub-link")}`,
               { force: true },
@@ -4453,25 +4645,25 @@ const script = () => {
       animationScrub() {}
       animationReveal() {}
       destroy() {}
-    },
-    Intro: class extends TriggerSetup {
-      constructor() {
-        super();
-        this.el = null;
-        this.tlOverlap = null;
-        this.tlScaleThumb = null;
-      }
-      trigger(data) {
+        },
+        Intro: class extends TriggerSetup {
+            constructor() {
+                super();
+                this.el = null;
+                this.tlOverlap = null;
+                this.tlScaleThumb = null;
+            }
+            trigger(data) {
         this.el = data.next.container.querySelector(".yacth-intro-wrap");
-        super.setTrigger(this.el, this.onTrigger.bind(this));
-        this.tlScaleThumb = [];
-      }
-      onTrigger() {
-        this.animationScrub();
-        this.animationReveal();
-        this.interact();
-      }
-      animationScrub() {
+                super.setTrigger(this.el, this.onTrigger.bind(this));
+                this.tlScaleThumb = [];
+            }
+            onTrigger() {
+                this.animationScrub();
+                this.animationReveal();
+                this.interact();
+            }
+            animationScrub() {
         $(this.el)
           .selectAll(".yacth-intro-sc")
           .each((idx, el) => {
@@ -4492,14 +4684,14 @@ const script = () => {
             });
             this.tlScaleThumb.push(
               gsap
-                .timeline({
-                  scrollTrigger: {
+                        .timeline({
+                            scrollTrigger: {
                     trigger: $(el).find(".yacth-intro-thumb"),
                     start: "top bottom",
                     end: "bottom bottom",
                     scrub: true,
-                  },
-                  defaults: {
+                            },
+                            defaults: {
                     ease: "none",
                   },
                 })
@@ -4526,7 +4718,7 @@ const script = () => {
             new Swiper($(el).select(".yacth-intro-explore-cms"), {
               slidesPerView: "auto",
               spaceBetween: cvUnit(viewport.w > 767 ? 20 : 16, "rem"),
-              navigation: {
+                        navigation: {
                 nextEl: $(el).select(".yacth-intro-explore-control-item.next"),
                 prevEl: $(el).select(".yacth-intro-explore-control-item.prev"),
                 disabledClass: "disabled",
@@ -4536,36 +4728,36 @@ const script = () => {
       }
       animationReveal() {}
       interact() {}
-      destroy() {
-        if (this.tlOverlap) {
-          this.tlOverlap.kill();
-        }
-        if (this.tlScaleThumb.length > 0) {
+            destroy() {
+                if (this.tlOverlap) {
+                    this.tlOverlap.kill();
+                }
+                if (this.tlScaleThumb.length > 0) {
           this.tlScaleThumb.forEach((tl) => tl.kill());
-        }
-      }
-    },
-    Design: class extends TriggerSetup {
-      constructor() {
-        super();
-        this.el = null;
-        this.rafID = null;
-        this.currentIdx = 0;
-      }
-      trigger(data) {
+                }
+            }
+        },
+        Design: class extends TriggerSetup {
+            constructor() {
+                super();
+                this.el = null;
+                this.rafID = null;
+                this.currentIdx = 0;
+            }
+            trigger(data) {
         this.el = data.next.container.querySelector(".yacth-design-wrap");
-        super.setTrigger(this.el, this.onTrigger.bind(this));
-      }
-      onTrigger() {
-        this.animationScrub();
-        this.animationReveal();
-        this.interact();
-      }
+                super.setTrigger(this.el, this.onTrigger.bind(this));
+            }
+            onTrigger() {
+                this.animationScrub();
+                this.animationReveal();
+                this.interact();
+            }
       animationScrub() {}
       animationReveal() {}
-      interact() {
-        if (viewport.w > 767) {
-          const updateActive = () => {
+            interact() {
+                if (viewport.w > 767) {
+                    const updateActive = () => {
             let left = $(this.el)
               .find(".yacth-design-detail-tab-item")
               .eq(this.currentIdx)
@@ -4599,9 +4791,9 @@ const script = () => {
               .find(".yacth-design-detail-main-item")
               .eq(this.currentIdx)
               .addClass("active");
-            if (this.currentIdx === 0) {
+                        if (this.currentIdx === 0) {
               $(this.el).find(".yacth-design-detail-scan").addClass("active");
-            } else {
+                        } else {
               $(this.el)
                 .find(".yacth-design-detail-scan")
                 .removeClass("active");
@@ -4621,17 +4813,17 @@ const script = () => {
           $(this.el)
             .find(".yacth-design-detail-tab-item")
             .on("click", (e) => {
-              let index = $(e.target).index();
-              this.currentIdx = index;
-              updateActive();
+                        let index = $(e.target).index();
+                        this.currentIdx = index;
+                        updateActive();
             });
-          // $(this.el).find('.yacth-design-detail-main-item').eq(0).addClass('comparing');
+                    // $(this.el).find('.yacth-design-detail-main-item').eq(0).addClass('comparing');
           $(this.el)
             .find(".yacth-design-detail-tab-item")
             .eq(0)
             .trigger("click");
-          // this.dragTransform();
-          if (viewport.w > 767) {
+                    // this.dragTransform();
+                    if (viewport.w > 767) {
             $(this.el)
               .find(".yacth-design-detail-main-tooltip-main")
               .on("pointerenter", (e) => {
@@ -4679,16 +4871,16 @@ const script = () => {
                       .find(".yacth-design-detail-main-title .heading")
                       .text(),
                   );
-                smoothScroll.lenis.stop();
+                            smoothScroll.lenis.stop();
               });
             $(zoomClone)
               .find(".yacth-design-zoom-close")
               .on("click", () => {
                 $(zoomClone).removeClass("active");
-                smoothScroll.lenis.start();
+                            smoothScroll.lenis.start();
               });
 
-            if (viewport.w <= 991) {
+                        if (viewport.w <= 991) {
               $(this.el)
                 .find(".yacth-design-detail-main-close")
                 .on("click", (e) => {
@@ -4701,17 +4893,17 @@ const script = () => {
                 .find(".yacth-design-detail-main-arrow")
                 .on("click", (e) => {
                   if ($(e.target).hasClass("next")) {
-                    this.currentIdx++;
-                    updateActive();
+                                    this.currentIdx++;
+                                    updateActive();
                   } else if ($(e.target).hasClass("prev")) {
-                    this.currentIdx--;
-                    updateActive();
+                                    this.currentIdx--;
+                                    updateActive();
                   } else return;
                 });
-            }
-          }
+                                }
+                        }
         } else {
-          const DOM = {
+                    const DOM = {
             accordion: $(this.el).find(".yacth-design-detail-main-item"),
             accordionTitle: $(this.el).find(
               ".yacth-design-detail-main-item-title",
@@ -4720,27 +4912,27 @@ const script = () => {
               ".yacth-design-detail-main-item-content",
             ),
           };
-          const activeAccordion = (index) => {
-            DOM.accordionContent.eq(index).slideToggle("slow");
-            DOM.accordion.eq(index).toggleClass("active");
+                    const activeAccordion = (index) => {
+                        DOM.accordionContent.eq(index).slideToggle("slow");
+                        DOM.accordion.eq(index).toggleClass("active");
 
             DOM.accordionContent
               .not(DOM.accordionContent.eq(index))
               .slideUp("slow");
-            DOM.accordion.not(DOM.accordion.eq(index)).removeClass("active");
+                        DOM.accordion.not(DOM.accordion.eq(index)).removeClass("active");
           };
-          DOM.accordionTitle.on("click", function () {
-            let index = $(this).parent().index();
-            activeAccordion(index);
+                    DOM.accordionTitle.on("click", function () {
+                        let index = $(this).parent().index();
+                        activeAccordion(index);
           });
-          activeAccordion(0);
+                    activeAccordion(0);
 
           DOM.accordionContent
             .find(".yacth-design-detail-main-item-img-draw img")
             .removeAttr("loading");
-        }
-      }
-      dragTransform() {
+                }
+            }
+            dragTransform() {
         const scanInner = $(this.el).find(".yacth-design-detail-scan").get(0);
         const track = $(this.el).find(".yacth-design-detail-scan-inner").get(0);
         const maskItem = $(this.el)
@@ -4753,15 +4945,15 @@ const script = () => {
             "data-mouse-down-at": scanInner.getBoundingClientRect().width / 2,
             "data-percentage": -50,
             "data-prev-percentage": -50,
-          });
+                });
 
-        let isOnDown = false;
-        let isOnMove = false;
-        let targetPercentage = -50;
-        let currentPercentage = -50;
-        const MOVEMENT_THRESHOLD = 2;
+                let isOnDown = false;
+                let isOnMove = false;
+                let targetPercentage = -50;
+                let currentPercentage = -50;
+                const MOVEMENT_THRESHOLD = 2;
 
-        const handleOnDown = (e) => {
+                const handleOnDown = (e) => {
           if (
             viewport.w > 991 &&
             !$(this.el).find(".yacth-design-detail-scan-drag-inner:hover")
@@ -4773,56 +4965,56 @@ const script = () => {
             : e.clientX;
           track.dataset.mouseDownAt =
             clientX - scanInner.getBoundingClientRect().left;
-          track.dataset.prevPercentage = track.dataset.percentage || -50;
-          track.dataset.initialX = track.dataset.mouseDownAt;
-          isOnDown = true;
+                    track.dataset.prevPercentage = track.dataset.percentage || -50;
+                    track.dataset.initialX = track.dataset.mouseDownAt;
+                    isOnDown = true;
           scanInner.classList.add("is-drag");
-          if (viewport.w > 776 && viewport.w <= 991) {
+                    if (viewport.w > 776 && viewport.w <= 991) {
             if (
               $(this.el).find(".yacth-design-detail-main-tooltip.active").length
             ) {
               $(this.el)
                 .find(".yacth-design-detail-main-tooltip")
                 .removeClass("active");
-            }
-          }
-        };
+                        }
+                    }
+                };
 
-        const handleOnUp = () => {
-          track.dataset.mouseDownAt = "0";
-          track.dataset.prevPercentage = currentPercentage;
-          isOnDown = false;
-          isOnMove = false;
+                const handleOnUp = () => {
+                    track.dataset.mouseDownAt = "0";
+                    track.dataset.prevPercentage = currentPercentage;
+                    isOnDown = false;
+                    isOnMove = false;
           scanInner.classList.remove("is-drag");
-        };
+                };
 
-        const animate = () => {
-          if (isOnMove && track.dataset.mouseDownAt !== "0") {
+                const animate = () => {
+                    if (isOnMove && track.dataset.mouseDownAt !== "0") {
             const mouseDelta =
               parseFloat(track.dataset.mouseDownAt) -
               (track.dataset.currentX || 0);
-            const maxDelta = scanInner.getBoundingClientRect().width;
-            const percentage = (mouseDelta / maxDelta) * -100;
+                        const maxDelta = scanInner.getBoundingClientRect().width;
+                        const percentage = (mouseDelta / maxDelta) * -100;
             const nextPercentageUnconstrained =
               parseFloat(track.dataset.prevPercentage) - percentage;
             targetPercentage = Math.max(
               Math.min(nextPercentageUnconstrained, 0),
               -100,
             );
-          }
+                    }
 
-          currentPercentage = lerp(currentPercentage, targetPercentage, 0.1);
-          track.dataset.percentage = currentPercentage;
+                    currentPercentage = lerp(currentPercentage, targetPercentage, 0.1);
+                    track.dataset.percentage = currentPercentage;
 
           gsap.set([track, maskItem], {
             "--hidden-mask": `${currentPercentage * -1}%`,
           });
 
-          this.rafID = requestAnimationFrame(animate);
-        };
+                    this.rafID = requestAnimationFrame(animate);
+                };
 
-        const handleOnMove = (e) => {
-          if (!isOnDown) return;
+                const handleOnMove = (e) => {
+                    if (!isOnDown) return;
 
           const clientX = e.type.includes("touch")
             ? e.touches[0].clientX
@@ -4834,120 +5026,120 @@ const script = () => {
             parseFloat(track.dataset.currentX) -
               parseFloat(track.dataset.initialX),
           );
-          if (movement > MOVEMENT_THRESHOLD) {
-            isOnMove = true;
-            track.dataset.mouseDownAt = track.dataset.initialX;
-          }
-        };
+                    if (movement > MOVEMENT_THRESHOLD) {
+                        isOnMove = true;
+                        track.dataset.mouseDownAt = track.dataset.initialX;
+                    }
+                };
 
-        scanInner.onmousedown = (e) => handleOnDown(e);
-        scanInner.ontouchstart = (e) => handleOnDown(e);
+                scanInner.onmousedown = (e) => handleOnDown(e);
+                scanInner.ontouchstart = (e) => handleOnDown(e);
 
-        scanInner.onmouseup = () => handleOnUp(e);
-        scanInner.ontouchend = () => handleOnUp(e);
+                scanInner.onmouseup = () => handleOnUp(e);
+                scanInner.ontouchend = () => handleOnUp(e);
 
-        scanInner.onmousemove = (e) => handleOnMove(e);
-        scanInner.ontouchmove = (e) => handleOnMove(e);
+                scanInner.onmousemove = (e) => handleOnMove(e);
+                scanInner.ontouchmove = (e) => handleOnMove(e);
 
-        this.rafID = requestAnimationFrame(animate);
-      }
-      destroy() {
-        cancelAnimationFrame(this.rafID);
-        this.rafID = null;
-      }
-    },
-    Footer: class extends Footer {
+                this.rafID = requestAnimationFrame(animate);
+            }
+            destroy() {
+                cancelAnimationFrame(this.rafID);
+                this.rafID = null;
+            }
+        },
+        Footer: class extends Footer {
       constructor() {
         super();
-      }
+        }
     },
   };
-  const StoryPage = {
-    Hero: class {
-      constructor() {
-        this.el = null;
-        this.tlOnce = null;
-        this.tlEnter = null;
-        this.tlTriggerEnter = null;
-      }
-      setup(data, mode) {
+    const StoryPage = {
+        Hero: class {
+            constructor() {
+                this.el = null;
+                this.tlOnce = null;
+                this.tlEnter = null;
+                this.tlTriggerEnter = null;
+            }
+            setup(data, mode) {
         this.el = data.next.container.querySelector(".story-hero-wrap");
         if (mode === "once") {
-          this.setupOnce(data);
+                    this.setupOnce(data);
         } else if (mode === "enter") {
-          this.setupEnter(data);
+                    this.setupEnter(data);
         } else return;
 
-        this.animationScrub();
-      }
-      setupOnce(data) {
-        this.tlOnce = gsap.timeline({
-          paused: true,
+                this.animationScrub();
+            }
+            setupOnce(data) {
+                this.tlOnce = gsap.timeline({
+                    paused: true,
           onStart: () => $("[data-init-hidden]").removeAttr("data-init-hidden"),
         });
-      }
-      setupEnter(data) {
-        this.tlEnter = gsap.timeline({
-          paused: true,
+            }
+            setupEnter(data) {
+                this.tlEnter = gsap.timeline({
+                    paused: true,
           onStart: () => $("[data-init-hidden]").removeAttr("data-init-hidden"),
         });
 
-        this.tlTriggerEnter = gsap.timeline({
-          scrollTrigger: {
-            trigger: this.el,
+                this.tlTriggerEnter = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: this.el,
             start: "top bottom+=50%",
             end: "bottom top-=50%",
-            once: true,
-            onEnter: () => this.tlEnter.play(),
-            onEnterBack: () => this.tlEnter.play(),
+                        once: true,
+                        onEnter: () => this.tlEnter.play(),
+                        onEnterBack: () => this.tlEnter.play(),
             onStart: () =>
               $("[data-init-hidden]").removeAttr("data-init-hidden"),
           },
         });
-      }
-      playOnce() {
-        this.tlOnce.play();
-      }
+            }
+            playOnce() {
+                this.tlOnce.play();
+            }
       playEnter() {}
       animationReveal(timeline) {}
-      animationScrub() {
+            animationScrub() {
         new ParallaxImage({ el: $(this.el).select(".story-hero-sub-img img") });
-      }
-      destroy() {
-        if (this.tlOnce) {
-          this.tlOnce.kill();
-        }
-        if (this.tlEnter) {
-          this.tlEnter.kill();
-        }
-        if (this.tlTriggerEnter) {
-          this.tlTriggerEnter.kill();
-        }
-      }
-    },
-    Main: class extends TriggerSetup {
-      constructor() {
-        super();
-        this.el = null;
-        this.tlProg = null;
-        this.tlScaleThumb = null;
-      }
-      trigger(data) {
+            }
+            destroy() {
+                if (this.tlOnce) {
+                    this.tlOnce.kill();
+                }
+                if (this.tlEnter) {
+                    this.tlEnter.kill();
+                }
+                if (this.tlTriggerEnter) {
+                    this.tlTriggerEnter.kill();
+                }
+            }
+        },
+        Main: class extends TriggerSetup {
+            constructor() {
+                super();
+                this.el = null;
+                this.tlProg = null;
+                this.tlScaleThumb = null;
+            }
+            trigger(data) {
         this.el = data.next.container.querySelector(".story-main-wrap");
-        super.setTrigger(this.el, this.onTrigger.bind(this));
-        this.tlScaleThumb = [];
-      }
-      onTrigger() {
-        this.animationScrub();
-        this.animationReveal();
-        this.interact();
-      }
-      animationScrub() {
-        if (viewport.w > 767) {
+                super.setTrigger(this.el, this.onTrigger.bind(this));
+                this.tlScaleThumb = [];
+            }
+            onTrigger() {
+                this.animationScrub();
+                this.animationReveal();
+                this.interact();
+            }
+            animationScrub() {
+                if (viewport.w > 767) {
           $(this.el)
             .selectAll(".story-main-item")
             .each((idx, el) => {
-              let isInitMainImg = false;
+                        let isInitMainImg = false;
               if (idx < $(this.el).selectAll(".story-main-item").length - 1) {
                 const clipPathFrom =
                   idx % 2 === 1
@@ -4959,15 +5151,15 @@ const script = () => {
                     : { xPercent: 25, yPercent: -25 };
                 this.tlScaleThumb.push(
                   gsap
-                    .timeline({
-                      scrollTrigger: {
-                        trigger: el,
+                                .timeline({
+                                    scrollTrigger: {
+                                        trigger: el,
                         start: "top 90%",
                         end: "bottom 0%",
                         scrub: 0.5,
-                      },
-                      onComplete: () => {
-                        if (isInitMainImg) return;
+                                    },
+                                    onComplete: () => {
+                                        if (isInitMainImg) return;
                         if (
                           idx === 0 &&
                           $(this.el)
@@ -4977,13 +5169,13 @@ const script = () => {
                           $(this.el)
                             .find(".story-main-item-img img")
                             .removeAttr("loading");
-                          isInitMainImg = true;
-                        }
+                                            isInitMainImg = true;
+                                        }
                       },
-                    })
+                                })
                     .fromTo(
                       $(el).find(".story-main-item-img"),
-                      { clipPath: clipPathFrom },
+                                    { clipPath: clipPathFrom },
                       {
                         clipPath: `inset(0% 0% 0% 0% round ${cvUnit(4, "rem")}px)`,
                         ease: "power1.inOut",
@@ -4992,7 +5184,7 @@ const script = () => {
                     )
                     .fromTo(
                       $(el).find(".story-main-item-img img"),
-                      { ...transformFrom, scale: 1.2 },
+                                    { ...transformFrom, scale: 1.2 },
                       {
                         xPercent: 0,
                         yPercent: 0,
@@ -5019,13 +5211,13 @@ const script = () => {
               } else {
                 this.tlScaleThumb.push(
                   gsap
-                    .timeline({
-                      scrollTrigger: {
+                                .timeline({
+                                    scrollTrigger: {
                         trigger: $(el).find(".story-main-item-content"),
-                        start: `bottom 90%`,
+                                        start: `bottom 90%`,
                         end: `bottom-=${viewport.h * (viewport.w > 991 ? 0.5 : 0.3)} bottom`,
-                        endTrigger: el,
-                        scrub: 1,
+                                        endTrigger: el,
+                                        scrub: 1,
                       },
                     })
                     .fromTo(
@@ -5035,7 +5227,7 @@ const script = () => {
                     )
                     .fromTo(
                       $(el).select(".story-main-item-content"),
-                      { y: 0 },
+                                    { y: 0 },
                       {
                         y: cvUnit(70, "rem"),
                         ease: "power1.inOut",
@@ -5062,10 +5254,10 @@ const script = () => {
                       "<=0",
                     ),
                 );
-              }
-            });
-          this.tlProg = gsap.timeline({
-            scrollTrigger: {
+                        }
+                    });
+                    this.tlProg = gsap.timeline({
+                        scrollTrigger: {
               trigger: $(this.el).select(".story-main-prog"),
               start: "top 60%",
               end: "bottom 15%",
@@ -5087,41 +5279,41 @@ const script = () => {
       }
       animationReveal() {}
       interact() {}
-      destroy() {
-        if (this.tlProg) {
-          this.tlProg.kill();
-        }
-        if (this.tlScaleThumb.length > 0) {
+            destroy() {
+                if (this.tlProg) {
+                    this.tlProg.kill();
+                }
+                if (this.tlScaleThumb.length > 0) {
           this.tlScaleThumb.forEach((tl) => tl.kill());
-        }
-      }
-    },
-    Today: class extends TriggerSetup {
-      constructor() {
-        super();
-        this.el = null;
-        this.tlOverlap = null;
-      }
-      trigger(data) {
+                }
+            }
+        },
+        Today: class extends TriggerSetup {
+            constructor() {
+                super();
+                this.el = null;
+                this.tlOverlap = null;
+            }
+            trigger(data) {
         this.el = data.next.container.querySelector(".story-today-wrap");
-        super.setTrigger(this.el, this.onTrigger.bind(this));
-      }
-      onTrigger() {
-        this.animationScrub();
-        this.animationReveal();
-        this.interact();
-      }
-      animationScrub() {
-        if (viewport.w > 991) {
-          this.tlOverlap = gsap.timeline({
-            scrollTrigger: {
+                super.setTrigger(this.el, this.onTrigger.bind(this));
+            }
+            onTrigger() {
+                this.animationScrub();
+                this.animationReveal();
+                this.interact();
+            }
+            animationScrub() {
+                if (viewport.w > 991) {
+                    this.tlOverlap = gsap.timeline({
+                        scrollTrigger: {
               trigger: $(this.el).select(".story-today-title"),
               start: "top bottom",
               end: "top top",
               scrub: 1,
             },
           });
-          this.tlOverlap
+                    this.tlOverlap
             .fromTo(
               $(this.el).select(".story-today-title"),
               { y: 0 },
@@ -5155,7 +5347,7 @@ const script = () => {
           );
       }
       animationReveal() {}
-      interact() {
+            interact() {
         $(this.el).find(".story-today-explore-cms").addClass("swiper");
         $(this.el).find(".story-today-explore-list").addClass("swiper-wrapper");
         $(this.el).find(".story-today-explore-item").addClass("swiper-slide");
@@ -5163,117 +5355,117 @@ const script = () => {
         new Swiper($(this.el).select(".story-today-explore-cms"), {
           slidesPerView: "auto",
           spaceBetween: cvUnit(viewport.w > 767 ? 20 : 16, "rem"),
-          navigation: {
+                    navigation: {
             nextEl: $(this.el).select(".story-today-explore-control-item.next"),
             prevEl: $(this.el).select(".story-today-explore-control-item.prev"),
             disabledClass: "disabled",
           },
         });
-      }
-      destroy() {
-        if (this.tlOverlap) {
-          this.tlOverlap.kill();
-        }
-      }
-    },
-    Footer: class extends Footer {
+            }
+            destroy() {
+                if (this.tlOverlap) {
+                    this.tlOverlap.kill();
+                }
+            }
+        },
+        Footer: class extends Footer {
       constructor() {
         super();
-      }
+        }
     },
   };
-  const SchedulePage = {
-    Hero: class {
-      constructor() {
-        this.el = null;
-        this.tlOnce = null;
-        this.tlEnter = null;
-        this.tlTriggerEnter = null;
-      }
-      setup(data, mode) {
+    const SchedulePage = {
+        Hero: class {
+            constructor() {
+                this.el = null;
+                this.tlOnce = null;
+                this.tlEnter = null;
+                this.tlTriggerEnter = null;
+            }
+            setup(data, mode) {
         this.el = data.next.container.querySelector(".sr-hero-wrap");
         if (mode === "once") {
-          this.setupOnce(data);
+                    this.setupOnce(data);
         } else if (mode === "enter") {
-          this.setupEnter(data);
+                    this.setupEnter(data);
         } else return;
 
-        this.animationScrub();
-      }
-      setupOnce(data) {
-        this.tlOnce = gsap.timeline({
-          paused: true,
+                this.animationScrub();
+            }
+            setupOnce(data) {
+                this.tlOnce = gsap.timeline({
+                    paused: true,
           onStart: () => $("[data-init-hidden]").removeAttr("data-init-hidden"),
         });
-      }
-      setupEnter(data) {
-        this.tlEnter = gsap.timeline({
-          paused: true,
+            }
+            setupEnter(data) {
+                this.tlEnter = gsap.timeline({
+                    paused: true,
           onStart: () => $("[data-init-hidden]").removeAttr("data-init-hidden"),
         });
 
-        this.tlTriggerEnter = gsap.timeline({
-          scrollTrigger: {
-            trigger: this.el,
+                this.tlTriggerEnter = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: this.el,
             start: "top bottom+=50%",
             end: "bottom top-=50%",
-            once: true,
-            onEnter: () => this.tlEnter.play(),
-            onEnterBack: () => this.tlEnter.play(),
+                        once: true,
+                        onEnter: () => this.tlEnter.play(),
+                        onEnterBack: () => this.tlEnter.play(),
             onStart: () =>
               $("[data-init-hidden]").removeAttr("data-init-hidden"),
           },
         });
-      }
-      playOnce() {
-        this.tlOnce.play();
-      }
+            }
+            playOnce() {
+                this.tlOnce.play();
+            }
       playEnter() {}
       animationReveal(timeline) {}
       animationScrub() {}
-      destroy() {
-        if (this.tlOnce) {
-          this.tlOnce.kill();
-        }
-        if (this.tlEnter) {
-          this.tlEnter.kill();
-        }
-        if (this.tlTriggerEnter) {
-          this.tlTriggerEnter.kill();
-        }
-      }
-    },
-    Nav: class extends TriggerSetup {
-      constructor() {
-        super();
-        this.el = null;
-      }
-      trigger(data) {
+            destroy() {
+                if (this.tlOnce) {
+                    this.tlOnce.kill();
+                }
+                if (this.tlEnter) {
+                    this.tlEnter.kill();
+                }
+                if (this.tlTriggerEnter) {
+                    this.tlTriggerEnter.kill();
+                }
+            }
+        },
+        Nav: class extends TriggerSetup {
+            constructor() {
+                super();
+                this.el = null;
+            }
+            trigger(data) {
         this.el = data.next.container.querySelector(".sr-nav.mix");
         this.allNav = data.next.container.querySelectorAll(".sr-nav");
-        super.setTrigger(this.el, this.onTrigger.bind(this));
-      }
-      onTrigger() {
-        this.interact();
-      }
-      interact() {
-        if (viewport.w > 991) {
-          this.scrollActive();
-        }
-      }
-      scrollActive() {
+                super.setTrigger(this.el, this.onTrigger.bind(this));
+            }
+            onTrigger() {
+                this.interact();
+            }
+            interact() {
+                if (viewport.w > 991) {
+                    this.scrollActive();
+                }
+            }
+            scrollActive() {
         let currentID = "";
         let prevID = "";
         let allSection = $(this.el).nextAll().selectAll("section");
 
-        const updateActive = (id, isActive) => {
-          $(this.allNav).each((_, nav) => {
-            let allLink = $(nav).selectAll(".sr-nav-item-link");
-            allLink.each((idx, el) => {
-              if ($(el).attr("data-sub-link") === id && currentID === id) {
-                if (isActive) {
-                  if (prevID !== currentID) {
+                const updateActive = (id, isActive) => {
                     $(this.allNav).each((_, nav) => {
+            let allLink = $(nav).selectAll(".sr-nav-item-link");
+                        allLink.each((idx, el) => {
+              if ($(el).attr("data-sub-link") === id && currentID === id) {
+                                if (isActive) {
+                                    if (prevID !== currentID) {
+                                        $(this.allNav).each((_, nav) => {
                       $(nav)
                         .find(".sr-nav-active-inner")
                         .css(
@@ -5281,8 +5473,8 @@ const script = () => {
                           `${idx}fr 1fr ${allLink.length - idx - 1}fr`,
                         );
                     });
-                    prevID = currentID;
-                  }
+                                        prevID = currentID;
+                                    }
                   if (!$(nav).hasClass("expand")) {
                     $(nav).addClass("expand");
                   }
@@ -5303,55 +5495,55 @@ const script = () => {
           });
         };
         smoothScroll.lenis.on("scroll", function (e) {
-          let currScroll = e.scroll;
-          const updateTOC = () => {
-            allSection.each((idx, heading) => {
-              let rect = $(heading).get(0).getBoundingClientRect();
+                    let currScroll = e.scroll;
+                    const updateTOC = () => {
+                        allSection.each((idx, heading) => {
+                            let rect = $(heading).get(0).getBoundingClientRect();
               let id = $(heading).attr("id");
               let isActive =
                 isInViewport(heading) &&
                 rect.top <= window.innerHeight / 2 &&
                 rect.bottom >= window.innerHeight / 2;
-              if (isActive) {
-                currentID = id;
-              }
-              updateActive(id, isActive);
-            });
+                            if (isActive) {
+                                currentID = id;
+                            }
+                            updateActive(id, isActive);
+                        });
           };
-          updateTOC();
-        });
-      }
-    },
-    Main: class extends TriggerSetup {
-      constructor() {
-        super();
-        this.el = null;
-        this.tlScaleThumb = null;
-      }
-      trigger(data) {
+                    updateTOC();
+                });
+            }
+        },
+        Main: class extends TriggerSetup {
+            constructor() {
+                super();
+                this.el = null;
+                this.tlScaleThumb = null;
+            }
+            trigger(data) {
         this.el = data.next.container.querySelector(".sr-main-wrap");
-        super.setTrigger(this.el, this.onTrigger.bind(this));
-      }
-      onTrigger() {
-        this.animationScrub();
-        this.setup();
-        this.filter();
-      }
-      animationScrub() {
-        if (viewport.w > 991) {
+                super.setTrigger(this.el, this.onTrigger.bind(this));
+            }
+            onTrigger() {
+                this.animationScrub();
+                this.setup();
+                this.filter();
+            }
+            animationScrub() {
+                if (viewport.w > 991) {
           new ParallaxImage({
             el: $(this.el).select(".sr-main-thumb-inner.inset img"),
             scaleOffset: 0.2,
           });
-          this.tlScaleThumb = gsap
-            .timeline({
-              scrollTrigger: {
+                    this.tlScaleThumb = gsap
+                            .timeline({
+                                scrollTrigger: {
                 trigger: $(this.el).select(".sr-main-thumb-inner.inset"),
                 start: `top ${$(this.el).find(".sr-main-thumb-inner.inset").offset().top}`,
                 end: "bottom bottom",
                 scrub: true,
-              },
-              defaults: {
+                                },
+                                defaults: {
                 ease: "none",
               },
             })
@@ -5376,11 +5568,11 @@ const script = () => {
             .find(".sr-main-pricing-img img")
             .each((idx, img) => {
               new ParallaxImage({ el: $(img).get(0), scaleOffset: 0.2 });
-            });
-        }
-      }
-      setup() {
-        let getCurrentYear = new Date().getFullYear();
+                    });
+                }
+            }
+            setup() {
+                let getCurrentYear = new Date().getFullYear();
         let dropdownYearClone = $(this.el)
           .find("[data-filter=year] .select-dropdown-opt")
           .eq(0)
@@ -5390,7 +5582,7 @@ const script = () => {
         [...Array(3).keys()]
           .map((i) => getCurrentYear + i)
           .forEach((year) => {
-            let html = dropdownYearClone.clone();
+                    let html = dropdownYearClone.clone();
             html.find(".txt").text(year);
             html.find("input").attr({
               value: year,
@@ -5401,25 +5593,25 @@ const script = () => {
               .find("[data-filter=year] .select-dropdown-opts")
               .append(html);
           });
-      }
-      filter() {
-        const dropdownAction = {
-          open: (parent) => {
+            }
+            filter() {
+                const dropdownAction = {
+                    open: (parent) => {
             const selector = (child) => (parent ? parent(child) : $(child));
             selector().addClass("active");
             selector(".select-dropdown-opts").addClass("active");
             selector(".select-dropdown-toggle").addClass("active");
-            // selector('.dropdown-select').slideDown();
-          },
-          close: (parent) => {
+                        // selector('.dropdown-select').slideDown();
+                    },
+                    close: (parent) => {
             const selector = (child) => (parent ? parent(child) : $(child));
             selector().removeClass("active");
             selector(".select-dropdown-opts").removeClass("active");
             selector(".select-dropdown-toggle").removeClass("active");
-          },
-          toggle: (parent) => {
+                    },
+                    toggle: (parent) => {
             parent().toggleClass("active");
-            // $(this.el).find(`.select-field-grp`).not(parent()).removeClass('active');
+                        // $(this.el).find(`.select-field-grp`).not(parent()).removeClass('active');
 
             parent(".select-dropdown-opts").toggleClass("active");
             $(this.el)
@@ -5444,9 +5636,9 @@ const script = () => {
           .on("click", function (e) {
             const parent = childSelect($(this).parents(".select-field-grp"));
             $(this).addClass("active").siblings().removeClass("active");
-            let valText = $(this).text();
+                    let valText = $(this).text();
             parent(".input-field.type-select").val(valText);
-            // dropdownAction.close(parent);
+                    // dropdownAction.close(parent);
           });
         $(this.el)
           .find(".input-field-grp .input-field")
@@ -5459,7 +5651,7 @@ const script = () => {
           .find(".input-field-grp .select-dropdown-toggle")
           .on("click", function (e) {
             const parent = childSelect($(this).parents(".input-field-grp"));
-            dropdownAction.toggle(parent);
+                    dropdownAction.toggle(parent);
           });
         $(this.el)
           .find(".input-field-grp .input-field")
@@ -5471,124 +5663,124 @@ const script = () => {
               .closest(".input-field-grp")
               .toggleClass("filled", $(this).val() != "");
             if ($(this).hasClass("type-select")) {
-              // setTimeout(() => dropdownAction.close(parent), 100);
-            }
+                        // setTimeout(() => dropdownAction.close(parent), 100);
+                    }
           });
         $(window).on("click", function (e) {
           if (!$(e.target).closest(".input-field-grp").length) {
-            dropdownAction.close();
-          }
+                        dropdownAction.close();
+                    }
         });
 
-        window.FinsweetAttributes ||= [];
-        window.FinsweetAttributes.push([
+                window.FinsweetAttributes ||= [];
+                window.FinsweetAttributes.push([
           "list",
-          (listInstances) => {
-            listInstances.forEach((listInstance, index) => {
-              let instance = listInstance.instance;
+                    (listInstances) => {
+                        listInstances.forEach((listInstance, index) => {
+                            let instance = listInstance.instance;
               listInstance.addHook("afterRender", () => {
-                const totalPages = listInstance.totalPages.value;
+                                const totalPages = listInstance.totalPages.value;
                 const paginationElement = $(this.el).find(
                   `[fs-list-instance="${instance}"] .w-pagination-wrapper`,
                 );
                 $(paginationElement).toggleClass("hidden", totalPages === 1);
-              });
-            });
-          },
-        ]);
-      }
-      destroy() {
-        if (this.tlScaleThumb) {
-          this.tlScaleThumb.kill();
-        }
-      }
-    },
-    Footer: class extends Footer {
+                            });
+                        });
+                    },
+                ]);
+            }
+            destroy() {
+                if (this.tlScaleThumb) {
+                    this.tlScaleThumb.kill();
+                }
+            }
+        },
+        Footer: class extends Footer {
       constructor() {
         super();
-      }
+        }
     },
   };
-  const AdvisorPage = {
-    Hero: class {
-      constructor() {
-        this.el = null;
-        this.tlOnce = null;
-        this.tlEnter = null;
-        this.tlTriggerEnter = null;
-      }
-      setup(data, mode) {
+    const AdvisorPage = {
+        Hero: class {
+            constructor() {
+                this.el = null;
+                this.tlOnce = null;
+                this.tlEnter = null;
+                this.tlTriggerEnter = null;
+            }
+            setup(data, mode) {
         this.el = data.next.container.querySelector(".advisor-hero-wrap");
         if (mode === "once") {
-          this.setupOnce(data);
+                    this.setupOnce(data);
         } else if (mode === "enter") {
-          this.setupEnter(data);
+                    this.setupEnter(data);
         } else return;
 
-        this.animationScrub();
-      }
-      setupOnce(data) {
-        this.tlOnce = gsap.timeline({
-          paused: true,
+                this.animationScrub();
+            }
+            setupOnce(data) {
+                this.tlOnce = gsap.timeline({
+                    paused: true,
           onStart: () => $("[data-init-hidden]").removeAttr("data-init-hidden"),
         });
-      }
-      setupEnter(data) {
-        this.tlEnter = gsap.timeline({
-          paused: true,
+            }
+            setupEnter(data) {
+                this.tlEnter = gsap.timeline({
+                    paused: true,
           onStart: () => $("[data-init-hidden]").removeAttr("data-init-hidden"),
         });
 
-        this.tlTriggerEnter = gsap.timeline({
-          scrollTrigger: {
-            trigger: this.el,
+                this.tlTriggerEnter = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: this.el,
             start: "top bottom+=50%",
             end: "bottom top-=50%",
-            once: true,
-            onEnter: () => this.tlEnter.play(),
-            onEnterBack: () => this.tlEnter.play(),
+                        once: true,
+                        onEnter: () => this.tlEnter.play(),
+                        onEnterBack: () => this.tlEnter.play(),
             onStart: () =>
               $("[data-init-hidden]").removeAttr("data-init-hidden"),
           },
         });
-      }
-      playOnce() {
-        this.tlOnce.play();
-      }
+            }
+            playOnce() {
+                this.tlOnce.play();
+            }
       playEnter() {}
       animationReveal(timeline) {}
-      animationScrub() {
+            animationScrub() {
         $(this.el)
           .find(".advisor-hero-thumb img")
           .each((idx, img) => {
             new ParallaxImage({ el: $(img).get(0), scaleOffset: 0.2 });
-          });
-      }
-      destroy() {
-        if (this.tlOnce) {
-          this.tlOnce.kill();
-        }
-        if (this.tlEnter) {
-          this.tlEnter.kill();
-        }
-        if (this.tlTriggerEnter) {
-          this.tlTriggerEnter.kill();
-        }
-      }
-    },
-    Library: class extends TriggerSetup {
-      constructor() {
-        super();
-        this.el = null;
-      }
-      trigger(data) {
+                });
+            }
+            destroy() {
+                if (this.tlOnce) {
+                    this.tlOnce.kill();
+                }
+                if (this.tlEnter) {
+                    this.tlEnter.kill();
+                }
+                if (this.tlTriggerEnter) {
+                    this.tlTriggerEnter.kill();
+                }
+            }
+        },
+        Library: class extends TriggerSetup {
+            constructor() {
+                super();
+                this.el = null;
+            }
+            trigger(data) {
         this.el = data.next.container.querySelector(".advisor-lib-wrap");
-        super.setTrigger(this.el, this.onTrigger.bind(this));
-      }
-      onTrigger() {
-        this.animationScrub();
-      }
-      animationScrub() {
+                super.setTrigger(this.el, this.onTrigger.bind(this));
+            }
+            onTrigger() {
+                this.animationScrub();
+            }
+            animationScrub() {
         $(this.el)
           .find(".advisor-lib-main-img img")
           .each((idx, img) => {
@@ -5596,39 +5788,39 @@ const script = () => {
           });
       }
       destroy() {}
-    },
-    Main: class extends TriggerSetup {
-      constructor() {
-        super();
-        this.el = null;
-      }
-      trigger(data) {
+        },
+        Main: class extends TriggerSetup {
+            constructor() {
+                super();
+                this.el = null;
+            }
+            trigger(data) {
         this.el = data.next.container.querySelector(".advisor-schedule-wrap");
-        super.setTrigger(this.el, this.onTrigger.bind(this));
-      }
-      onTrigger() {
-        this.animationScrub();
-        this.filter();
-      }
+                super.setTrigger(this.el, this.onTrigger.bind(this));
+            }
+            onTrigger() {
+                this.animationScrub();
+                this.filter();
+            }
       animationScrub() {}
-      filter() {
-        const dropdownAction = {
-          open: (parent) => {
+            filter() {
+                const dropdownAction = {
+                    open: (parent) => {
             const selector = (child) => (parent ? parent(child) : $(child));
             selector().addClass("active");
             selector(".select-dropdown-opts").addClass("active");
             selector(".select-dropdown-toggle").addClass("active");
-            // selector('.dropdown-select').slideDown();
-          },
-          close: (parent) => {
+                        // selector('.dropdown-select').slideDown();
+                    },
+                    close: (parent) => {
             const selector = (child) => (parent ? parent(child) : $(child));
             selector().removeClass("active");
             selector(".select-dropdown-opts").removeClass("active");
             selector(".select-dropdown-toggle").removeClass("active");
-          },
-          toggle: (parent) => {
+                    },
+                    toggle: (parent) => {
             parent().toggleClass("active");
-            // $(this.el).find(`.select-field-grp`).not(parent()).removeClass('active');
+                        // $(this.el).find(`.select-field-grp`).not(parent()).removeClass('active');
 
             parent(".select-dropdown-opts").toggleClass("active");
             $(this.el)
@@ -5653,9 +5845,9 @@ const script = () => {
           .on("click", function (e) {
             const parent = childSelect($(this).parents(".select-field-grp"));
             $(this).addClass("active").siblings().removeClass("active");
-            let valText = $(this).text();
+                    let valText = $(this).text();
             parent(".input-field.type-select").val(valText);
-            dropdownAction.close(parent);
+                    dropdownAction.close(parent);
           });
         $(this.el)
           .find(".input-field-grp .input-field")
@@ -5670,8 +5862,8 @@ const script = () => {
             const parent = childSelect($(this).parents(".input-field-grp"));
             $(this).closest(".input-field-grp").addClass("active");
             if ($(this).hasClass("type-select")) {
-              dropdownAction.open(parent);
-            }
+                        dropdownAction.open(parent);
+                    }
           });
         $(this.el)
           .find(".input-field-grp .input-field")
@@ -5683,109 +5875,109 @@ const script = () => {
               .closest(".input-field-grp")
               .toggleClass("filled", $(this).val() != "");
             if ($(this).hasClass("type-select")) {
-              setTimeout(() => dropdownAction.close(parent), 100);
-            }
+                        setTimeout(() => dropdownAction.close(parent), 100);
+                    }
           });
 
-        window.FinsweetAttributes ||= [];
-        window.FinsweetAttributes.push([
+                window.FinsweetAttributes ||= [];
+                window.FinsweetAttributes.push([
           "list",
-          (listInstances) => {
-            listInstances.forEach((listInstance, index) => {
-              let instance = listInstance.instance;
+                    (listInstances) => {
+                        listInstances.forEach((listInstance, index) => {
+                            let instance = listInstance.instance;
               listInstance.addHook("afterRender", () => {
-                const totalPages = listInstance.totalPages.value;
+                                const totalPages = listInstance.totalPages.value;
                 const paginationElement = $(this.el).find(
                   `[fs-list-instance="${instance}"] .w-pagination-wrapper`,
                 );
                 $(paginationElement).toggleClass("hidden", totalPages === 1);
-              });
-            });
-          },
-        ]);
-      }
+                            });
+                        });
+                    },
+                ]);
+            }
       destroy() {}
-    },
-    Footer: class extends Footer {
+        },
+        Footer: class extends Footer {
       constructor() {
         super();
-      }
+        }
     },
   };
-  const JournalsPage = {
-    Hero: class {
-      constructor() {
-        this.el = null;
-        this.tlOnce = null;
-        this.tlEnter = null;
-        this.tlTriggerEnter = null;
-      }
-      setup(data, mode) {
+    const JournalsPage = {
+        Hero: class {
+            constructor() {
+                this.el = null;
+                this.tlOnce = null;
+                this.tlEnter = null;
+                this.tlTriggerEnter = null;
+            }
+            setup(data, mode) {
         this.el = data.next.container.querySelector(".journal-hero-wrap");
         if (mode === "once") {
-          this.setupOnce(data);
+                    this.setupOnce(data);
         } else if (mode === "enter") {
-          this.setupEnter(data);
+                    this.setupEnter(data);
         } else return;
 
-        this.animationScrub();
-      }
-      setupOnce(data) {
-        this.tlOnce = gsap.timeline({
-          paused: true,
+                this.animationScrub();
+            }
+            setupOnce(data) {
+                this.tlOnce = gsap.timeline({
+                    paused: true,
           onStart: () => $("[data-init-hidden]").removeAttr("data-init-hidden"),
         });
-      }
-      setupEnter(data) {
-        this.tlEnter = gsap.timeline({
-          paused: true,
+            }
+            setupEnter(data) {
+                this.tlEnter = gsap.timeline({
+                    paused: true,
           onStart: () => $("[data-init-hidden]").removeAttr("data-init-hidden"),
         });
 
-        this.tlTriggerEnter = gsap.timeline({
-          scrollTrigger: {
-            trigger: this.el,
+                this.tlTriggerEnter = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: this.el,
             start: "top bottom+=50%",
             end: "bottom top-=50%",
-            once: true,
-            onEnter: () => this.tlEnter.play(),
-            onEnterBack: () => this.tlEnter.play(),
+                        once: true,
+                        onEnter: () => this.tlEnter.play(),
+                        onEnterBack: () => this.tlEnter.play(),
             onStart: () =>
               $("[data-init-hidden]").removeAttr("data-init-hidden"),
           },
         });
-      }
-      playOnce() {
-        this.tlOnce.play();
-      }
+            }
+            playOnce() {
+                this.tlOnce.play();
+            }
       playEnter() {}
       animationReveal(timeline) {}
       animationScrub() {}
-      destroy() {
-        if (this.tlOnce) {
-          this.tlOnce.kill();
-        }
-        if (this.tlEnter) {
-          this.tlEnter.kill();
-        }
-        if (this.tlTriggerEnter) {
-          this.tlTriggerEnter.kill();
-        }
-      }
-    },
-    Main: class extends TriggerSetup {
-      constructor() {
-        super();
-        this.el = null;
-      }
-      trigger(data) {
+            destroy() {
+                if (this.tlOnce) {
+                    this.tlOnce.kill();
+                }
+                if (this.tlEnter) {
+                    this.tlEnter.kill();
+                }
+                if (this.tlTriggerEnter) {
+                    this.tlTriggerEnter.kill();
+                }
+            }
+        },
+        Main: class extends TriggerSetup {
+            constructor() {
+                super();
+                this.el = null;
+            }
+            trigger(data) {
         this.el = data.next.container.querySelector(".journal-main-wrap");
-        super.setTrigger(this.el, this.onTrigger.bind(this));
-      }
-      onTrigger() {
-        this.animationScrub();
-      }
-      animationScrub() {
+                super.setTrigger(this.el, this.onTrigger.bind(this));
+            }
+            onTrigger() {
+                this.animationScrub();
+            }
+            animationScrub() {
         new ParallaxImage({
           el: $(this.el).select(".journal-main-popular-thumb img"),
         });
@@ -5796,24 +5988,24 @@ const script = () => {
           });
       }
       destroy() {}
-    },
-    Article: class extends TriggerSetup {
-      constructor() {
-        super();
-        this.el = null;
-      }
-      trigger(data) {
+        },
+        Article: class extends TriggerSetup {
+            constructor() {
+                super();
+                this.el = null;
+            }
+            trigger(data) {
         this.el = data.next.container.querySelector(".journal-article-wrap");
-        super.setTrigger(this.el, this.onTrigger.bind(this));
-      }
-      onTrigger() {
-        this.animationScrub();
-        this.animationReveal();
-        this.interact();
-      }
+                super.setTrigger(this.el, this.onTrigger.bind(this));
+            }
+            onTrigger() {
+                this.animationScrub();
+                this.animationReveal();
+                this.interact();
+            }
       animationScrub() {}
       animationReveal() {}
-      interact() {
+            interact() {
         $(this.el).find(".journal-article-main-cms").addClass("swiper");
         $(this.el)
           .find(".journal-article-main-list")
@@ -5825,7 +6017,7 @@ const script = () => {
           {
             slidesPerView: "auto",
             spaceBetween: cvUnit(viewport.w > 767 ? 20 : 16, "rem"),
-            navigation: {
+                    navigation: {
               nextEl: $(this.el).select(".journal-article-control-item.next"),
               prevEl: $(this.el).select(".journal-article-control-item.prev"),
               disabledClass: "disabled",
@@ -5834,27 +6026,27 @@ const script = () => {
         );
       }
       destroy() {}
-    },
-    Footer: class extends Footer {
+        },
+        Footer: class extends Footer {
       constructor() {
         super();
-      }
+        }
     },
   };
-  const JournalPage = {
-    Content: class extends TriggerSetup {
-      constructor() {
-        super();
-        this.el = null;
-      }
-      trigger(data) {
+    const JournalPage = {
+        Content: class extends TriggerSetup {
+            constructor() {
+                super();
+                this.el = null;
+            }
+            trigger(data) {
         this.el = data.next.container.querySelector(".journal-content-wrap");
-        super.setTrigger(this.el, this.onTrigger.bind(this));
-      }
-      onTrigger() {
-        this.animationScrub();
-      }
-      animationScrub() {
+                super.setTrigger(this.el, this.onTrigger.bind(this));
+            }
+            onTrigger() {
+                this.animationScrub();
+            }
+            animationScrub() {
         $(this.el)
           .find(".journal-content-richtext img")
           .each((idx, img) => {
@@ -5862,24 +6054,24 @@ const script = () => {
           });
       }
       destroy() {}
-    },
-    Article: class extends TriggerSetup {
-      constructor() {
-        super();
-        this.el = null;
-      }
-      trigger(data) {
+        },
+        Article: class extends TriggerSetup {
+            constructor() {
+                super();
+                this.el = null;
+            }
+            trigger(data) {
         this.el = data.next.container.querySelector(".journal-article-wrap");
-        super.setTrigger(this.el, this.onTrigger.bind(this));
-      }
-      onTrigger() {
-        this.animationScrub();
-        this.animationReveal();
-        this.interact();
-      }
+                super.setTrigger(this.el, this.onTrigger.bind(this));
+            }
+            onTrigger() {
+                this.animationScrub();
+                this.animationReveal();
+                this.interact();
+            }
       animationScrub() {}
       animationReveal() {}
-      interact() {
+            interact() {
         $(this.el).find(".journal-article-main-cms").addClass("swiper");
         $(this.el)
           .find(".journal-article-main-list")
@@ -5891,7 +6083,7 @@ const script = () => {
           {
             slidesPerView: "auto",
             spaceBetween: cvUnit(viewport.w > 767 ? 20 : 16, "rem"),
-            navigation: {
+                    navigation: {
               nextEl: $(this.el).select(".journal-article-control-item.next"),
               prevEl: $(this.el).select(".journal-article-control-item.prev"),
               disabledClass: "disabled",
@@ -5900,80 +6092,80 @@ const script = () => {
         );
       }
       destroy() {}
-    },
-    Footer: class extends Footer {
+        },
+        Footer: class extends Footer {
       constructor() {
         super();
-      }
+        }
     },
   };
-  const ContactPage = {
-    Main: class {
-      constructor() {
-        this.el = null;
-        this.tlOnce = null;
-        this.tlEnter = null;
-        this.tlTriggerEnter = null;
-      }
-      setup(data, mode) {
+    const ContactPage = {
+        Main: class {
+            constructor() {
+                this.el = null;
+                this.tlOnce = null;
+                this.tlEnter = null;
+                this.tlTriggerEnter = null;
+            }
+            setup(data, mode) {
         this.el = data.next.container.querySelector(".contact-main-wrap");
         if (mode === "once") {
-          this.setupOnce(data);
+                    this.setupOnce(data);
         } else if (mode === "enter") {
-          this.setupEnter(data);
+                    this.setupEnter(data);
         } else return;
 
-        this.interact();
-      }
-      setupOnce(data) {
-        this.tlOnce = gsap.timeline({
-          paused: true,
+                this.interact();
+            }
+            setupOnce(data) {
+                this.tlOnce = gsap.timeline({
+                    paused: true,
           onStart: () => $("[data-init-hidden]").removeAttr("data-init-hidden"),
         });
-      }
-      setupEnter(data) {
-        this.tlEnter = gsap.timeline({
-          paused: true,
+            }
+            setupEnter(data) {
+                this.tlEnter = gsap.timeline({
+                    paused: true,
           onStart: () => $("[data-init-hidden]").removeAttr("data-init-hidden"),
         });
 
-        this.tlTriggerEnter = gsap.timeline({
-          scrollTrigger: {
-            trigger: this.el,
+                this.tlTriggerEnter = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: this.el,
             start: "top bottom+=50%",
             end: "bottom top-=50%",
-            once: true,
-            onEnter: () => this.tlEnter.play(),
-            onEnterBack: () => this.tlEnter.play(),
+                        once: true,
+                        onEnter: () => this.tlEnter.play(),
+                        onEnterBack: () => this.tlEnter.play(),
             onStart: () =>
               $("[data-init-hidden]").removeAttr("data-init-hidden"),
           },
         });
-      }
-      playOnce() {
-        this.tlOnce.play();
-      }
+            }
+            playOnce() {
+                this.tlOnce.play();
+            }
       playEnter() {}
       animationReveal(timeline) {}
       animationScrub() {}
-      interact() {
-        const dropdownAction = {
-          open: (parent) => {
+            interact() {
+                const dropdownAction = {
+                    open: (parent) => {
             const selector = (child) => (parent ? parent(child) : $(child));
             selector().addClass("active");
             selector(".select-dropdown-opts").addClass("active");
             selector(".select-dropdown-toggle").addClass("active");
-            // selector('.dropdown-select').slideDown();
-          },
-          close: (parent) => {
+                        // selector('.dropdown-select').slideDown();
+                    },
+                    close: (parent) => {
             const selector = (child) => (parent ? parent(child) : $(child));
             selector().removeClass("active");
             selector(".select-dropdown-opts").removeClass("active");
             selector(".select-dropdown-toggle").removeClass("active");
-          },
-          toggle: (parent) => {
+                    },
+                    toggle: (parent) => {
             parent().toggleClass("active");
-            // $(this.el).find(`.select-field-grp`).not(parent()).removeClass('active');
+                        // $(this.el).find(`.select-field-grp`).not(parent()).removeClass('active');
 
             parent(".select-dropdown-opts").toggleClass("active");
             $(this.el)
@@ -5998,9 +6190,9 @@ const script = () => {
           .on("click", function (e) {
             const parent = childSelect($(this).parents(".select-field-grp"));
             $(this).addClass("active").siblings().removeClass("active");
-            let valText = $(this).text();
+                    let valText = $(this).text();
             parent(".input-field.type-select").val(valText);
-            dropdownAction.close(parent);
+                    dropdownAction.close(parent);
           });
         $(this.el)
           .find(".input-field-grp .input-field")
@@ -6026,8 +6218,8 @@ const script = () => {
               }
               parent(".iti__country-list").css("width", parent().width());
             } else if ($(this).hasClass("type-select")) {
-              dropdownAction.open(parent);
-            }
+                        dropdownAction.open(parent);
+                    }
           });
         $(this.el)
           .find(".input-field-grp .input-field")
@@ -6047,28 +6239,28 @@ const script = () => {
                 .closest(".input-field-grp")
                 .toggleClass("filled", $(this).val() != "");
               if ($(this).hasClass("type-select")) {
-                setTimeout(() => dropdownAction.close(parent), 100);
-              }
-            }
+                            setTimeout(() => dropdownAction.close(parent), 100);
+                        }
+                    }
           });
 
         $(this.el)
           .find(`.input-field-grp [ms-code-phone-number]`)
           .each(function () {
-            let input = this;
-            let preferredCountries = ["sg"];
+                    let input = this;
+                    let preferredCountries = ["sg"];
 
-            let iti = window.intlTelInput(input, {
-              preferredCountries: preferredCountries,
+                    let iti = window.intlTelInput(input, {
+                        preferredCountries: preferredCountries,
               utilsScript:
                 "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
-            });
+                    });
 
             $.get(
               "https://ipinfo.io",
               function (response) {
-                var countryCode = response.country;
-                iti.setCountry(countryCode);
+                        var countryCode = response.country;
+                        iti.setCountry(countryCode);
               },
               "jsonp",
             );
@@ -6076,26 +6268,26 @@ const script = () => {
             input.addEventListener("change", formatPhoneNumber);
             input.addEventListener("keyup", formatPhoneNumber);
 
-            // Restrict input to digits and the plus sign
+                    // Restrict input to digits and the plus sign
             input.addEventListener("input", function () {
               this.value = this.value.replace(/[^\d+]/g, "");
-            });
+                    });
 
-            function formatPhoneNumber() {
+                    function formatPhoneNumber() {
               let formattedNumber = iti.getNumber(
                 intlTelInputUtils.numberFormat.INTERNATIONAL,
               );
-              input.value = formattedNumber;
-            }
+                        input.value = formattedNumber;
+                    }
 
-            // var form = $(input).closest('form');
-            // form.submit(function() {
-            //     var formattedNumber = iti.getNumber(intlTelInputUtils.numberFormat.INTERNATIONAL);
-            //     input.value = formattedNumber;
-            // });
-          });
+                    // var form = $(input).closest('form');
+                    // form.submit(function() {
+                    //     var formattedNumber = iti.getNumber(intlTelInputUtils.numberFormat.INTERNATIONAL);
+                    //     input.value = formattedNumber;
+                    // });
+                });
 
-        setTimeout(() => {
+                setTimeout(() => {
           $(this.el)
             .find(".iti__country-list")
             .css(
@@ -6109,7 +6301,7 @@ const script = () => {
             .find(".input-field-grp .input-field[ms-code-phone-number]")
             .parent()
             .attr("data-lenis-prevent", "");
-        }, 1000);
+                }, 1000);
 
         let arr = [];
         $(this.el)
@@ -6117,10 +6309,10 @@ const script = () => {
           .on("click", function () {
             const parent = childSelect($(this).parents(".input-field-grp"));
 
-            let valText = $(this).text();
+                    let valText = $(this).text();
             if (!$(this).hasClass("active")) {
               $(this).addClass("active");
-              arr.push(valText);
+                        arr.push(valText);
               parent(".input-field.type-select").val(valText);
             } else {
               $(this).removeClass("active");
@@ -6129,155 +6321,155 @@ const script = () => {
             parent(".input-field").val(arr.join(", "));
           });
 
-        const onSuccessForm = (formID) => {
-          setTimeout(() => {
+                const onSuccessForm = (formID) => {
+                    setTimeout(() => {
             $(this.el).find(formID).trigger("reset");
             $(this.el).find(".input-field-grp").removeClass("filled");
             $(this.el).find(".select-dropdown-opt").removeClass("active");
             $(this.el).find(".multiple-opt").removeClass("active");
-          }, 1000);
+                    }, 1000);
         };
 
-        formSubmitEvent.init({
+                formSubmitEvent.init({
           onlyWorkOnThisFormName: "Contact form",
           onSuccess: () => onSuccessForm("#contact-form"),
         });
         $('input[type="submit"]').on("pointerenter", function () {
           if ($(this).prop("disabled")) {
             $(this).prop("disabled", false);
-          }
-        });
-      }
-      destroy() {
-        if (this.tlOnce) {
-          this.tlOnce.kill();
-        }
-        if (this.tlEnter) {
-          this.tlEnter.kill();
-        }
-        if (this.tlTriggerEnter) {
-          this.tlTriggerEnter.kill();
-        }
-      }
-    },
+                    }
+                });
+            }
+            destroy() {
+                if (this.tlOnce) {
+                    this.tlOnce.kill();
+                }
+                if (this.tlEnter) {
+                    this.tlEnter.kill();
+                }
+                if (this.tlTriggerEnter) {
+                    this.tlTriggerEnter.kill();
+                }
+            }
+        },
   };
 
-  const ThanksPage = {
-    Main: class {
-      constructor() {
-        this.el = null;
-        this.tlOnce = null;
-        this.tlEnter = null;
-        this.tlTriggerEnter = null;
-      }
-      setup(data, mode) {
+    const ThanksPage = {
+        Main: class {
+            constructor() {
+                this.el = null;
+                this.tlOnce = null;
+                this.tlEnter = null;
+                this.tlTriggerEnter = null;
+            }
+            setup(data, mode) {
         this.el = data.next.container.querySelector(".contact-main-wrap");
         if (mode === "once") {
-          this.setupOnce(data);
+                    this.setupOnce(data);
         } else if (mode === "enter") {
-          this.setupEnter(data);
+                    this.setupEnter(data);
         } else return;
-      }
-      setupOnce(data) {
-        this.tlOnce = gsap.timeline({
-          paused: true,
+            }
+            setupOnce(data) {
+                this.tlOnce = gsap.timeline({
+                    paused: true,
           onStart: () => $("[data-init-hidden]").removeAttr("data-init-hidden"),
         });
-      }
-      setupEnter(data) {
-        this.tlEnter = gsap.timeline({
-          paused: true,
+            }
+            setupEnter(data) {
+                this.tlEnter = gsap.timeline({
+                    paused: true,
           onStart: () => $("[data-init-hidden]").removeAttr("data-init-hidden"),
         });
 
-        this.tlTriggerEnter = gsap.timeline({
-          scrollTrigger: {
-            trigger: this.el,
+                this.tlTriggerEnter = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: this.el,
             start: "top bottom+=50%",
             end: "bottom top-=50%",
-            once: true,
-            onEnter: () => this.tlEnter.play(),
-            onEnterBack: () => this.tlEnter.play(),
+                        once: true,
+                        onEnter: () => this.tlEnter.play(),
+                        onEnterBack: () => this.tlEnter.play(),
             onStart: () =>
               $("[data-init-hidden]").removeAttr("data-init-hidden"),
           },
         });
-      }
-      playOnce() {
-        this.tlOnce.play();
-      }
+            }
+            playOnce() {
+                this.tlOnce.play();
+            }
       playEnter() {}
       animationReveal(timeline) {}
       animationScrub() {}
-      destroy() {
-        if (this.tlOnce) {
-          this.tlOnce.kill();
-        }
-        if (this.tlEnter) {
-          this.tlEnter.kill();
-        }
-        if (this.tlTriggerEnter) {
-          this.tlTriggerEnter.kill();
-        }
-      }
-    },
+            destroy() {
+                if (this.tlOnce) {
+                    this.tlOnce.kill();
+                }
+                if (this.tlEnter) {
+                    this.tlEnter.kill();
+                }
+                if (this.tlTriggerEnter) {
+                    this.tlTriggerEnter.kill();
+                }
+            }
+        },
   };
-  const TermPage = {
-    Main: class {
-      constructor() {
-        this.el = null;
-        this.tlOnce = null;
-        this.tlEnter = null;
-        this.tlTriggerEnter = null;
-        this.tlChangeBG = null;
-      }
-      setup(data, mode) {
+    const TermPage = {
+        Main: class {
+            constructor() {
+                this.el = null;
+                this.tlOnce = null;
+                this.tlEnter = null;
+                this.tlTriggerEnter = null;
+                this.tlChangeBG = null;
+            }
+            setup(data, mode) {
         this.el = data.next.container.querySelector(".term-main-wrap");
         if (mode === "once") {
-          this.setupOnce(data);
+                    this.setupOnce(data);
         } else if (mode === "enter") {
-          this.setupEnter(data);
+                    this.setupEnter(data);
         } else return;
 
-        this.interact();
-      }
-      setupOnce(data) {
-        this.tlOnce = gsap.timeline({
-          paused: true,
+                this.interact();
+            }
+            setupOnce(data) {
+                this.tlOnce = gsap.timeline({
+                    paused: true,
           onStart: () => $("[data-init-hidden]").removeAttr("data-init-hidden"),
         });
-      }
-      setupEnter(data) {
-        this.tlEnter = gsap.timeline({
-          paused: true,
+            }
+            setupEnter(data) {
+                this.tlEnter = gsap.timeline({
+                    paused: true,
           onStart: () => $("[data-init-hidden]").removeAttr("data-init-hidden"),
         });
 
-        this.tlTriggerEnter = gsap.timeline({
-          scrollTrigger: {
-            trigger: this.el,
+                this.tlTriggerEnter = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: this.el,
             start: "top bottom+=50%",
             end: "bottom top-=50%",
-            once: true,
-            onEnter: () => this.tlEnter.play(),
-            onEnterBack: () => this.tlEnter.play(),
+                        once: true,
+                        onEnter: () => this.tlEnter.play(),
+                        onEnterBack: () => this.tlEnter.play(),
             onStart: () =>
               $("[data-init-hidden]").removeAttr("data-init-hidden"),
           },
         });
-      }
-      playOnce() {
-        this.tlOnce.play();
-      }
+            }
+            playOnce() {
+                this.tlOnce.play();
+            }
       playEnter() {}
       animationReveal(timeline) {}
       animationScrub() {}
-      interact() {
-        if (viewport.w > 991) {
-          this.handleTOC();
-        }
-      }
-      handleTOC() {
+            interact() {
+                if (viewport.w > 991) {
+                    this.handleTOC();
+                }
+            }
+            handleTOC() {
         let tocClone = $(this.el)
           .find(".term-main-content-toc-item")
           .eq(0)
@@ -6285,15 +6477,15 @@ const script = () => {
           .removeClass("active");
         let headings = $(this.el).find(".term-main-content-richtext h2");
         $(this.el).find(".term-main-content-toc-list").html("");
-        if (headings.length === 1) {
+                if (headings.length === 1) {
           $(this.el).find(".term-main-content-toc").remove();
-          // $(this.el).find('.term-main-title').css('grid-area', '1/3/3/9');
+                    // $(this.el).find('.term-main-title').css('grid-area', '1/3/3/9');
         } else {
           $(this.el)
             .find(".term-main-content-toc-active")
             .css("--count-item", headings.length);
-          // $(this.el).find('.term-main-content-toc-active-inner').css('grid-template-rows', `${0}fr 1fr ${headings.length - 1}fr`)
-          headings.each((idx, heading) => {
+                    // $(this.el).find('.term-main-content-toc-active-inner').css('grid-template-rows', `${0}fr 1fr ${headings.length - 1}fr`)
+                    headings.each((idx, heading) => {
             let text = $(heading)
               .text()
               .replace(/^\d+\.\s*/, "")
@@ -6303,7 +6495,7 @@ const script = () => {
               .trim()
               .replace(/[\s\W-]+/g, "-")
               .replace(/^-+|-+$/g, "");
-            let link = tocClone.clone();
+                        let link = tocClone.clone();
 
             $(heading).attr("id", id);
             link.attr("href", `#${id}`);
@@ -6311,7 +6503,7 @@ const script = () => {
             link.find(".text-flip-txt").text(text);
             $(this.el).find(".term-main-content-toc-list").append(link);
           });
-          const updateActive = (id) => {
+                    const updateActive = (id) => {
             let activeItem = $(this.el).find(
               `.term-main-content-toc-item[data-sub-link='${id}']`,
             );
@@ -6320,7 +6512,7 @@ const script = () => {
               .find(`.term-main-content-toc-item`)
               .not(activeItem)
               .removeClass("w--current");
-            let idx = activeItem.index();
+                        let idx = activeItem.index();
             $(this.el)
               .find(".term-main-content-toc-active-inner")
               .css(
@@ -6329,296 +6521,296 @@ const script = () => {
               );
           };
           smoothScroll.lenis.on("scroll", function (e) {
-            let currScroll = e.scroll;
-            const updateHeadings = debounce(() => {
-              headings.each(function (idx, heading) {
-                let top = $(this).get(0).getBoundingClientRect().top;
+                        let currScroll = e.scroll;
+                        const updateHeadings = debounce(() => {
+                            headings.each(function (idx, heading) {
+                                let top = $(this).get(0).getBoundingClientRect().top;
                 let id = $(this).attr("id");
                 if (top > 0 && top < viewport.h / 5) {
-                  updateActive(id);
-                }
-              });
-            }, 600);
+                                    updateActive(id);
+                                }
+                            });
+                        }, 600);
 
-            updateHeadings();
-          });
+                        updateHeadings();
+                    });
           updateActive(headings.eq(0).attr("id"));
-        }
-      }
-      destroy() {
-        if (this.tlOnce) {
-          this.tlOnce.kill();
-        }
-        if (this.tlEnter) {
-          this.tlEnter.kill();
-        }
-        if (this.tlTriggerEnter) {
-          this.tlTriggerEnter.kill();
-        }
-        if (this.tlChangeBG) {
-          this.tlChangeBG.kill();
-        }
-      }
-    },
-    Footer: class extends Footer {
+                }
+            }
+            destroy() {
+                if (this.tlOnce) {
+                    this.tlOnce.kill();
+                }
+                if (this.tlEnter) {
+                    this.tlEnter.kill();
+                }
+                if (this.tlTriggerEnter) {
+                    this.tlTriggerEnter.kill();
+                }
+                if (this.tlChangeBG) {
+                    this.tlChangeBG.kill();
+                }
+            }
+        },
+        Footer: class extends Footer {
       constructor() {
         super();
-      }
+        }
     },
   };
 
-  class PageManager {
-    constructor(page) {
+    class PageManager {
+        constructor(page) {
       this.sections = Object.values(page).map((section) => new section());
 
-      // Bind event handlers
-      this.boundSetupHandler = this.setupHandler.bind(this);
-      this.boundOncePlayHandler = this.oncePlayHandler.bind(this);
-      this.boundEnterPlayHandler = this.enterPlayHandler.bind(this);
-    }
+            // Bind event handlers
+            this.boundSetupHandler = this.setupHandler.bind(this);
+            this.boundOncePlayHandler = this.oncePlayHandler.bind(this);
+            this.boundEnterPlayHandler = this.enterPlayHandler.bind(this);
+        }
 
-    initOnce(data) {
-      const container = data.next.container;
-      container.addEventListener("onceSetup", (event) => {
+        initOnce(data) {
+            const container = data.next.container;
+            container.addEventListener("onceSetup", (event) => {
         this.boundSetupHandler({ detail: event.detail, mode: "once" });
-      });
-      container.addEventListener("oncePlay", this.boundOncePlayHandler);
-    }
+            });
+            container.addEventListener("oncePlay", this.boundOncePlayHandler);
+        }
 
-    initEnter(data) {
-      const container = data.next.container;
-      container.addEventListener("enterSetup", (event) => {
+        initEnter(data) {
+            const container = data.next.container;
+            container.addEventListener("enterSetup", (event) => {
         this.boundSetupHandler({ detail: event.detail, mode: "enter" });
-      });
-      container.addEventListener("enterPlay", this.boundEnterPlayHandler);
-    }
+            });
+            container.addEventListener("enterPlay", this.boundEnterPlayHandler);
+        }
 
-    oncePlayHandler(event) {
+        oncePlayHandler(event) {
       this.sections.forEach((section) => {
-        if (section.playOnce) {
-          section.playOnce(event.detail);
+                if (section.playOnce) {
+                    section.playOnce(event.detail);
+                }
+            });
         }
-      });
-    }
 
-    enterPlayHandler(event) {
+        enterPlayHandler(event) {
       this.sections.forEach((section) => {
-        if (section.playEnter) {
-          section.playEnter(event.detail);
+                if (section.playEnter) {
+                    section.playEnter(event.detail);
+                }
+            });
         }
-      });
-    }
 
-    setupHandler(event) {
-      const data = event.detail;
-      const mode = event.mode;
+        setupHandler(event) {
+            const data = event.detail;
+            const mode = event.mode;
       this.sections.forEach((section) => {
-        if (section.trigger) {
-          section.trigger(data);
-        }
-        if (section.setup) {
-          section.setup(data, mode);
-        }
-      });
+                if (section.trigger) {
+                    section.trigger(data);
+                }
+                if (section.setup) {
+                    section.setup(data, mode);
+                }
+            });
       if (typeof ScrollTrigger !== "undefined") {
         requestAnimationFrame(() => ScrollTrigger.refresh());
       }
-    }
+        }
 
-    destroy(data) {
-      const container = data.next.container;
-      container.removeEventListener("onceSetup", this.boundSetupHandler);
-      container.removeEventListener("oncePlay", this.boundOncePlayHandler);
-      container.removeEventListener("enterSetup", this.boundSetupHandler);
-      container.removeEventListener("enterPlay", this.boundEnterPlayHandler);
+        destroy(data) {
+            const container = data.next.container;
+            container.removeEventListener("onceSetup", this.boundSetupHandler);
+            container.removeEventListener("oncePlay", this.boundOncePlayHandler);
+            container.removeEventListener("enterSetup", this.boundSetupHandler);
+            container.removeEventListener("enterPlay", this.boundEnterPlayHandler);
 
       this.sections.forEach((section) => {
-        if (section.destroy) {
-          section.destroy();
+                if (section.destroy) {
+                    section.destroy();
+                }
+                if (section.cleanTrigger) {
+                    section.cleanTrigger();
+                }
+            });
         }
-        if (section.cleanTrigger) {
-          section.cleanTrigger();
-        }
-      });
     }
-  }
-  class HomePageManager extends PageManager {
+    class HomePageManager extends PageManager {
     constructor(page) {
       super(page);
     }
-  }
-  class BespokePageManager extends PageManager {
+    }
+    class BespokePageManager extends PageManager {
     constructor(page) {
       super(page);
     }
-  }
-  class YacthPageManager extends PageManager {
+    }
+    class YacthPageManager extends PageManager {
     constructor(page) {
       super(page);
     }
-  }
-  class StoryPageManager extends PageManager {
+    }
+    class StoryPageManager extends PageManager {
     constructor(page) {
       super(page);
     }
-  }
-  class SchedulePageManager extends PageManager {
+    }
+    class SchedulePageManager extends PageManager {
     constructor(page) {
       super(page);
     }
-  }
-  class AdvisorPageManager extends PageManager {
+    }
+    class AdvisorPageManager extends PageManager {
     constructor(page) {
       super(page);
     }
-  }
-  class JournalsPageManager extends PageManager {
+    }
+    class JournalsPageManager extends PageManager {
     constructor(page) {
       super(page);
     }
-  }
-  class JournalPageManager extends PageManager {
+    }
+    class JournalPageManager extends PageManager {
     constructor(page) {
       super(page);
     }
-  }
-  class ContactPageManager extends PageManager {
+    }
+    class ContactPageManager extends PageManager {
     constructor(page) {
       super(page);
     }
-  }
-  class ThanksPageManager extends PageManager {
+    }
+    class ThanksPageManager extends PageManager {
     constructor(page) {
       super(page);
     }
-  }
-  class TermPageManager extends PageManager {
+    }
+    class TermPageManager extends PageManager {
     constructor(page) {
       super(page);
     }
-  }
-  const PageManagerRegistry = {
-    home: new HomePageManager(HomePage),
-    bespoke: new BespokePageManager(BespokePage),
-    yacth: new YacthPageManager(YacthPage),
-    story: new StoryPageManager(StoryPage),
-    schedule: new SchedulePageManager(SchedulePage),
-    advisor: new AdvisorPageManager(AdvisorPage),
-    journals: new JournalsPageManager(JournalsPage),
-    journal: new JournalPageManager(JournalPage),
-    contact: new ContactPageManager(ContactPage),
-    thanks: new ThanksPageManager(ThanksPage),
+    }
+    const PageManagerRegistry = {
+        home: new HomePageManager(HomePage),
+        bespoke: new BespokePageManager(BespokePage),
+        yacth: new YacthPageManager(YacthPage),
+        story: new StoryPageManager(StoryPage),
+        schedule: new SchedulePageManager(SchedulePage),
+        advisor: new AdvisorPageManager(AdvisorPage),
+        journals: new JournalsPageManager(JournalsPage),
+        journal: new JournalPageManager(JournalPage),
+        contact: new ContactPageManager(ContactPage),
+        thanks: new ThanksPageManager(ThanksPage),
     term: new TermPageManager(TermPage),
-  };
-  const SCRIPT = {
-    home: {
+    };
+    const SCRIPT = {
+        home: {
       namespace: "home",
-      afterEnter(data) {
-        PageManagerRegistry.home.initEnter(data);
+            afterEnter(data) {
+                PageManagerRegistry.home.initEnter(data);
+            },
+            beforeLeave(data) {
+                PageManagerRegistry.home.destroy(data);
       },
-      beforeLeave(data) {
-        PageManagerRegistry.home.destroy(data);
-      },
-    },
-    bespoke: {
+        },
+        bespoke: {
       namespace: "bespoke",
-      afterEnter(data) {
-        PageManagerRegistry.bespoke.initEnter(data);
+            afterEnter(data) {
+                PageManagerRegistry.bespoke.initEnter(data);
+            },
+            beforeLeave(data) {
+                PageManagerRegistry.bespoke.destroy(data);
       },
-      beforeLeave(data) {
-        PageManagerRegistry.bespoke.destroy(data);
-      },
-    },
-    yacth: {
+        },
+        yacth: {
       namespace: "yacth",
-      afterEnter(data) {
-        PageManagerRegistry.yacth.initEnter(data);
+            afterEnter(data) {
+                PageManagerRegistry.yacth.initEnter(data);
+            },
+            beforeLeave(data) {
+                PageManagerRegistry.yacth.destroy(data);
       },
-      beforeLeave(data) {
-        PageManagerRegistry.yacth.destroy(data);
-      },
-    },
-    story: {
+        },
+        story: {
       namespace: "story",
-      afterEnter(data) {
-        PageManagerRegistry.story.initEnter(data);
+            afterEnter(data) {
+                PageManagerRegistry.story.initEnter(data);
+            },
+            beforeLeave(data) {
+                PageManagerRegistry.story.destroy(data);
       },
-      beforeLeave(data) {
-        PageManagerRegistry.story.destroy(data);
-      },
-    },
-    schedule: {
+        },
+        schedule: {
       namespace: "schedule",
-      afterEnter(data) {
-        PageManagerRegistry.schedule.initEnter(data);
+            afterEnter(data) {
+                PageManagerRegistry.schedule.initEnter(data);
+            },
+            beforeLeave(data) {
+                PageManagerRegistry.schedule.destroy(data);
       },
-      beforeLeave(data) {
-        PageManagerRegistry.schedule.destroy(data);
-      },
-    },
-    advisor: {
+        },
+        advisor: {
       namespace: "advisor",
-      afterEnter(data) {
-        PageManagerRegistry.advisor.initEnter(data);
+            afterEnter(data) {
+                PageManagerRegistry.advisor.initEnter(data);
+            },
+            beforeLeave(data) {
+                PageManagerRegistry.advisor.destroy(data);
       },
-      beforeLeave(data) {
-        PageManagerRegistry.advisor.destroy(data);
-      },
-    },
-    journals: {
+        },
+        journals: {
       namespace: "journals",
-      afterEnter(data) {
-        PageManagerRegistry.journals.initEnter(data);
+            afterEnter(data) {
+                PageManagerRegistry.journals.initEnter(data);
+            },
+            beforeLeave(data) {
+                PageManagerRegistry.journals.destroy(data);
       },
-      beforeLeave(data) {
-        PageManagerRegistry.journals.destroy(data);
-      },
-    },
-    journal: {
+        },
+        journal: {
       namespace: "journal",
-      afterEnter(data) {
-        PageManagerRegistry.journal.initEnter(data);
+            afterEnter(data) {
+                PageManagerRegistry.journal.initEnter(data);
+            },
+            beforeLeave(data) {
+                PageManagerRegistry.journal.destroy(data);
       },
-      beforeLeave(data) {
-        PageManagerRegistry.journal.destroy(data);
-      },
-    },
-    contact: {
+        },
+        contact: {
       namespace: "contact",
-      afterEnter(data) {
-        PageManagerRegistry.contact.initEnter(data);
+            afterEnter(data) {
+                PageManagerRegistry.contact.initEnter(data);
+            },
+            beforeLeave(data) {
+                PageManagerRegistry.contact.destroy(data);
       },
-      beforeLeave(data) {
-        PageManagerRegistry.contact.destroy(data);
-      },
-    },
-    thanks: {
+        },
+        thanks: {
       namespace: "thanks",
-      afterEnter(data) {
-        PageManagerRegistry.thanks.initEnter(data);
+            afterEnter(data) {
+                PageManagerRegistry.thanks.initEnter(data);
+            },
+            beforeLeave(data) {
+                PageManagerRegistry.thanks.destroy(data);
       },
-      beforeLeave(data) {
-        PageManagerRegistry.thanks.destroy(data);
-      },
-    },
-    term: {
+        },
+        term: {
       namespace: "term",
-      afterEnter(data) {
-        PageManagerRegistry.term.initEnter(data);
-      },
-      beforeLeave(data) {
-        PageManagerRegistry.term.destroy(data);
+            afterEnter(data) {
+                PageManagerRegistry.term.initEnter(data);
+            },
+            beforeLeave(data) {
+                PageManagerRegistry.term.destroy(data);
       },
     },
   };
-  const VIEWS = Object.values(SCRIPT);
+    const VIEWS = Object.values(SCRIPT);
 
   let namespace = $(".main-inner").attr("data-barba-namespace");
 
-  barba.init({
-    preventRunning: true,
-    timeout: 5000,
-    debug: true,
+    barba.init({
+        preventRunning: true,
+        timeout: 5000,
+        debug: true,
     prevent: ({ href }) => {
       try {
         const url = new URL(href, window.location.origin);
@@ -6630,24 +6822,24 @@ const script = () => {
     transitions: [
       {
         name: "default-transition",
-        sync: true,
-        beforeOnce(data) {
-          smoothScroll.init(data);
-          globalChange.init(data);
+            sync: true,
+            beforeOnce(data) {
+                smoothScroll.init(data);
+                globalChange.init(data);
           documentHeightObserver("init", data);
-        },
-        once(data) {
+            },
+            once(data) {
           reinitializeWebflow(data);
           PageManagerRegistry[namespace]?.initOnce?.(data);
-          loader.init(data);
-          loader.play(data);
+                loader.init(data);
+                loader.play(data);
           scrollTop();
-          resetScroll(data);
-          header.init(data);
-        },
-        async leave(data) {
-          await pageTrans.play(data);
-        },
+                resetScroll(data);
+                header.init(data);
+            },
+            async leave(data) {
+                await pageTrans.play(data);
+            },
       },
     ],
     views: VIEWS,

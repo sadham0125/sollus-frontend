@@ -402,16 +402,24 @@
 }
 
 .home-team-thumb-inner img,
-.home-team-thumb-inner video {
+.home-team-thumb-inner video,
+.home-team-thumb-inner canvas {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 50% 72%;
+  object-position: 50% 50%;
+  pointer-events: none;
 }
 
-.home-team-thumb-inner video {
-  pointer-events: none;
+.yacht-frame-fallback,
+.yacht-frame-canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.yacht-frame-canvas {
+  z-index: 1;
 }
 
 .home-team-thumb {
@@ -422,6 +430,7 @@
 }
 
 .home-team-thumb-inner {
+  position: relative;
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -437,29 +446,35 @@
 .yacht-copy {
   position: absolute;
   top: 0;
+  right: 0;
   bottom: 0;
-  left: 8%;
+  left: 0;
   z-index: 2;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: min(45.7rem, 42vw);
+  align-items: center;
+  width: min(60rem, 48vw);
+  margin: 0 auto;
   pointer-events: none;
   opacity: 0;
+  text-align: center;
 }
 
 .yacht-copy-heading {
   margin: 0 0 2rem;
   color: #fff;
   font-family: "Playfair Display", "Marcellus", serif;
-  font-size: clamp(5.6rem, 8vw, 11.2rem);
+  font-size: clamp(5.6rem, 8vw, 7rem);
   font-weight: 500;
   letter-spacing: 0.02em;
   line-height: 0.9;
-  text-transform: uppercase;
+  text-align: center;
+  /* text-transform: uppercase; */
 }
 
 .yacht-copy-card {
+  width: 100%;
   padding: 2.4rem 2.6rem;
   border: 0.1rem solid rgba(255, 255, 255, 0.55);
   border-radius: 1.6rem;
@@ -482,7 +497,7 @@
   font-size: 1.45rem;
   font-weight: 400;
   line-height: 1.55;
-  text-align: left;
+  text-align: center;
 }
 
 @media screen and (max-width: 991px) {
@@ -505,11 +520,12 @@
 
   .yacht-copy {
     top: 0;
-    bottom: auto;
-    left: 6%;
-    justify-content: flex-start;
-    width: min(45.7rem, 78vw);
-    padding-top: 10rem;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    justify-content: center;
+    width: min(52rem, 84vw);
+    padding-top: 0;
   }
 
   .yacht-copy-heading {
@@ -519,10 +535,10 @@
 
 @media screen and (max-width: 767px) {
   .yacht-copy {
-    left: 4.8%;
-    right: 4.8%;
-    width: auto;
-    padding-top: 8.8rem;
+    left: 0;
+    right: 0;
+    width: min(52rem, 88vw);
+    padding-top: 0;
   }
 
   .yacht-copy-heading {
